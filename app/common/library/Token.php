@@ -32,7 +32,7 @@ class Token
     public static function connect(array $options = [], $name = false)
     {
         $type = ! empty($options['type']) ? $options['type'] : 'File';
-
+        
         if (false === $name) {
             $name = md5(serialize($options));
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * *
  *  * ============================================================================
@@ -19,6 +20,7 @@ use think\facade\Event;
 use think\facade\Config;
 use think\facade\Request;
 use app\common\model\User;
+use app\common\model\Wxuser;
 use think\facade\Validate;
 use app\common\model\UserRule;
 
@@ -28,15 +30,16 @@ class Auth
     protected $_error = '';
     protected $_logined = false;
     protected $_user = null;
+    protected $uid = 0;
     protected $_token = '';
     //Token默认有效时长
-    protected $keeptime = 2592000;
+    protected $keeptime = 604800;
     protected $requestUri = '';
     protected $rules = [];
     //默认配置
     protected $config = [];
     protected $options = [];
-    protected $allowFields = ['id', 'username', 'nickname', 'mobile', 'avatar', 'score'];
+    protected $allowFields = ['id', 'openid', 'nickname', 'mobile', 'headimgurl'];
 
     public function __construct($options = [])
     {
@@ -94,18 +97,19 @@ class Auth
             return false;
         }
         $data = Token::get($token);
-        if (! $data) {
+        if (!$data) {
             return false;
         }
-        $user_id = intval($data['user_id']);
-        if ($user_id > 0) {
-            $user = User::find($user_id);
-            if (! $user) {
+        $uid = intval($data['user_id']);
+        if ($uid > 0) {
+            // $user = User::find($user_id);
+            $user = Wxuser::find($uid);
+            if (!$user) {
                 $this->setError('Account not exist');
 
                 return false;
             }
-            if ($user['status'] != 'normal') {
+            if ($user['status'] != 1) {
                 $this->setError('Account is locked');
 
                 return false;
@@ -205,6 +209,40 @@ class Auth
         return true;
     }
 
+
+    /**
+     * 注册用户.
+     *
+     * @param string $username 用户名
+     * @param string $password 密码
+     * @param string $email    邮箱
+     * @param string $mobile   手机号
+     * @param array  $extend   扩展参数
+     *
+     * @return bool
+     */
+    public function wxregister(string $openid, string $sessionKey): bool
+    {
+        $ip = request()->ip();
+        $data = [
+            'openid' => $openid,
+            'session_key' => $sessionKey,
+            'ip' => ip2long($ip),
+        ];
+        $user = Wxuser::create($data);
+
+        $this->_user = Wxuser::find($user->uid);
+
+        //设置Token
+        $this->_token = Random::uuid();
+        Token::set($this->_token, $user->uid, $this->keeptime);
+
+        //注册成功的事件
+        Event::trigger('user_register_successed', $this->_user);
+
+        return true;
+    }
+
     /**
      * 用户登录.
      *
@@ -215,10 +253,12 @@ class Auth
      */
     public function login($account, $password)
     {
-        $field = Validate::is($account, 'email') ? 'email' : (Validate::regex($account,
-            '/^1\d{10}$/') ? 'mobile' : 'username');
+        $field = Validate::is($account, 'email') ? 'email' : (Validate::regex(
+            $account,
+            '/^1\d{10}$/'
+        ) ? 'mobile' : 'username');
         $user = User::where([$field => $account])->find();
-        if (! $user) {
+        if (!$user) {
             $this->setError('Account is incorrect');
 
             return false;
@@ -248,7 +288,7 @@ class Auth
      */
     public function logout()
     {
-        if (! $this->_logined) {
+        if (!$this->_logined) {
             $this->setError('You are not logged in');
 
             return false;
@@ -275,14 +315,16 @@ class Auth
      */
     public function changepwd($newpassword, $oldpassword = '', $ignoreoldpassword = false)
     {
-        if (! $this->_logined) {
+        if (!$this->_logined) {
             $this->setError('You are not logged in');
 
             return false;
         }
         //判断旧密码是否正确
-        if ($this->_user->password == $this->getEncryptPassword($oldpassword,
-                $this->_user->salt) || $ignoreoldpassword) {
+        if ($this->_user->password == $this->getEncryptPassword(
+            $oldpassword,
+            $this->_user->salt
+        ) || $ignoreoldpassword) {
             Db::startTrans();
 
             try {
@@ -329,8 +371,10 @@ class Auth
 
                 //判断连续登录和最大连续登录
                 if ($user->logintime < \fast\Date::unixtime('day')) {
-                    $user->successions = $user->logintime < \fast\Date::unixtime('day',
-                        -1) ? 1 : $user->successions + 1;
+                    $user->successions = $user->logintime < \fast\Date::unixtime(
+                        'day',
+                        -1
+                    ) ? 1 : $user->successions + 1;
                     $user->maxsuccessions = max($user->successions, $user->maxsuccessions);
                 }
 
@@ -367,6 +411,40 @@ class Auth
     }
 
     /**
+     * 直接登录账号.
+     *
+     * @param int $user_id
+     *
+     * @return bool
+     */
+    public function wxdirect($uid)
+    {
+        $user = Wxuser::find($uid);
+        if ($user) { 
+            $ip = request()->ip();
+            //记录本次登录的IP和时间
+            $user->loginip = $ip;
+
+            $user->save();
+
+            $this->_user = $user;
+
+            $this->_token = Random::uuid();
+
+            Token::set($this->_token, $user->uid, $this->keeptime);
+            
+
+            $this->_logined = true;
+
+            //登录成功的事件
+            Event::trigger('user_login_successed', $this->_user); 
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 检测是否是否有对应权限.
      *
      * @param string $path   控制器/方法
@@ -376,7 +454,7 @@ class Auth
      */
     public function check($path = null, $module = null)
     {
-        if (! $this->_logined) {
+        if (!$this->_logined) {
             return false;
         }
 
@@ -385,7 +463,7 @@ class Auth
         foreach ($ruleList as $k => $v) {
             $rules[] = $v['name'];
         }
-        $url = ($module ? $module : app()->http->getName()).'/'.(is_null($path) ? $this->getRequestUri() : $path);
+        $url = ($module ? $module : app()->http->getName()) . '/' . (is_null($path) ? $this->getRequestUri() : $path);
         $url = strtolower(str_replace('.', '/', $url));
 
         return in_array($url, $rules) ? true : false;
@@ -439,12 +517,15 @@ class Auth
             return $this->rules;
         }
         $group = $this->_user->group;
-        if (! $group) {
+        if (!$group) {
             return [];
         }
         $rules = explode(',', $group->rules);
-        $this->rules = UserRule::where('status', 'normal')->where('id', 'in',
-            $rules)->field('id,pid,name,title,ismenu')->select();
+        $this->rules = UserRule::where('status', 'normal')->where(
+            'id',
+            'in',
+            $rules
+        )->field('id,pid,name,title,ismenu')->select();
 
         return $this->rules;
     }
@@ -499,7 +580,7 @@ class Auth
     public function delete($user_id)
     {
         $user = User::find($user_id);
-        if (! $user) {
+        if (!$user) {
             return false;
         }
         Db::startTrans();
@@ -532,7 +613,7 @@ class Auth
      */
     public function getEncryptPassword($password, $salt = '')
     {
-        return md5(md5($password).$salt);
+        return md5(md5($password) . $salt);
     }
 
     /**
@@ -546,7 +627,7 @@ class Auth
     {
         $request = Request::instance();
         $arr = is_array($arr) ? $arr : explode(',', $arr);
-        if (! $arr) {
+        if (!$arr) {
             return false;
         }
         $arr = array_map('strtolower', $arr);
@@ -581,18 +662,20 @@ class Auth
      */
     public function render(&$datalist, $fields = [], $fieldkey = 'user_id', $renderkey = 'userinfo')
     {
-        $fields = ! $fields ? ['id', 'nickname', 'level', 'avatar'] : (is_array($fields) ? $fields : explode(',',
-            $fields));
+        $fields = !$fields ? ['id', 'nickname', 'level', 'avatar'] : (is_array($fields) ? $fields : explode(
+            ',',
+            $fields
+        ));
         $ids = [];
         foreach ($datalist as $k => $v) {
-            if (! isset($v[$fieldkey])) {
+            if (!isset($v[$fieldkey])) {
                 continue;
             }
             $ids[] = $v[$fieldkey];
         }
         $list = [];
         if ($ids) {
-            if (! in_array('id', $fields)) {
+            if (!in_array('id', $fields)) {
                 $fields[] = 'id';
             }
             $ids = array_unique($ids);

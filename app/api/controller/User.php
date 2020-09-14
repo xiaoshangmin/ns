@@ -133,6 +133,8 @@ class User extends Api
         }
     }
 
+    
+
     /**
      * 注销登录.
      */

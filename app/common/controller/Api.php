@@ -1,4 +1,5 @@
 <?php
+
 /**
  * *
  *  * ============================================================================
@@ -76,6 +77,12 @@ class Api
      */
     protected $responseType = 'json';
 
+    protected $uid = 0;
+    protected $_logined = false;
+    protected $_error = '';
+    protected $_user = null;
+    protected $_token = '';
+
     /**
      * 构造方法.
      *
@@ -106,7 +113,7 @@ class Api
         if (Config::get('fastadmin.api_cross')) {
             //是否开启跨域
             if (isset($_SERVER['HTTP_ORIGIN'])) {
-                header('Access-Control-Allow-Origin: '.$this->request->server('HTTP_ORIGIN'));
+                header('Access-Control-Allow-Origin: ' . $this->request->server('HTTP_ORIGIN'));
                 header('Access-Control-Allow-Credentials: true');
                 header('Access-Control-Max-Age: 86400');
             }
@@ -119,11 +126,9 @@ class Api
                 }
                 exit();
             }
-
         }
 
-        //移除HTML标签
-        $this->request->filter('trim,strip_tags,htmlspecialchars');
+        $this->request->filter('trim');
 
         $this->auth = app()->auth;
 
@@ -134,24 +139,25 @@ class Api
         // token
         $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\facade\Cookie::get('token')));
 
-        $path = str_replace('.', '/', $controllername).'/'.$actionname;
-        // 设置当前请求的URI
+        $path = str_replace('.', '/', $controllername) . '/' . $actionname;
+        // // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
-        if (! $this->auth->match($this->noNeedLogin)) {
+        if (!$this->auth->match($this->noNeedLogin)) {
             //初始化
             $this->auth->init($token);
             //检测是否登录
-            if (! $this->auth->isLogin()) {
+            if (!$this->auth->isLogin()) {
                 $this->error(__('Please login first'), null, 401);
             }
+
             // 判断是否需要验证权限
-            if (! $this->auth->match($this->noNeedRight)) {
-                // 判断控制器和方法判断是否有对应权限
-                if (! $this->auth->check($path)) {
-                    $this->error(__('You have no permission'), null, 403);
-                }
-            }
+            // if (!$this->auth->match($this->noNeedRight)) {
+            //     // 判断控制器和方法判断是否有对应权限
+            //     if (!$this->auth->check($path)) {
+            //         $this->error(__('You have no permission'), null, 403);
+            //     }
+            // }
         } else {
             // 如果有传递token才验证是否登录状态
             if ($token) {
@@ -159,27 +165,17 @@ class Api
             }
         }
 
-        $upload = \app\common\model\Config::upload();
+        // $upload = \app\common\model\Config::upload();
 
-        // 上传信息配置后
-        Event::trigger('upload_config_init', $upload);
+        // // 上传信息配置后
+        // Event::trigger('upload_config_init', $upload);
 
-        Config::set(array_merge(Config::get('upload'), $upload), 'upload');
+        // Config::set(array_merge(Config::get('upload'), $upload), 'upload');
 
-        // 加载当前控制器语言包
-        $this->loadlang($controllername);
+        // // 加载当前控制器语言包
+        // $this->loadlang($controllername);
     }
 
-    /**
-     * 加载语言文件.
-     *
-     * @param string $name
-     */
-    protected function loadlang($name)
-    {
-        Lang::load(app()->getAppPath().'/lang/'.Lang::getLangset().'/'.str_replace('.', '/',
-                strtolower($name)).'.php');
-    }
 
     /**
      * 操作成功返回的数据.
@@ -260,7 +256,7 @@ class Api
                 $options['only'] = explode(',', $options['only']);
             }
 
-            if (! in_array($this->request->action(), $options['only'])) {
+            if (!in_array($this->request->action(), $options['only'])) {
                 return;
             }
         } elseif (isset($options['except'])) {
@@ -315,7 +311,7 @@ class Api
 
             $v = Loader::validate($validate);
 
-            ! empty($scene) && $v->scene($scene);
+            !empty($scene) && $v->scene($scene);
         }
 
         // 批量验证
@@ -331,7 +327,7 @@ class Api
             call_user_func_array($callback, [$v, &$data]);
         }
 
-        if (! $v->check($data)) {
+        if (!$v->check($data)) {
             if ($this->failException) {
                 throw new ValidateException($v->getError());
             }

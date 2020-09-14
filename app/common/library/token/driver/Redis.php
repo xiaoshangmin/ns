@@ -30,15 +30,15 @@ class Redis extends Driver
      */
     public function __construct($options = [])
     {
-        if (! extension_loaded('redis')) {
+        if (!extension_loaded('redis')) {
             throw new \BadFunctionCallException('not support: redis');
         }
-        if (! empty($options)) {
+        if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
         $this->handler = new \Redis();
         if ($this->options['persistent']) {
-            $this->handler->pconnect($this->options['host'], $this->options['port'], $this->options['timeout'], 'persistent_id_'.$this->options['select']);
+            $this->handler->pconnect($this->options['host'], $this->options['port'], $this->options['timeout'], 'persistent_id_' . $this->options['select']);
         } else {
             $this->handler->connect($this->options['host'], $this->options['port'], $this->options['timeout']);
         }
@@ -61,9 +61,10 @@ class Redis extends Driver
      */
     protected function getEncryptedToken($token)
     {
-        $config = \think\Config::get('token');
+        // $config = \think\facade\Config::get('token');
 
-        return $this->options['tokenprefix'].hash_hmac($config['hashalgo'], $token, $config['key']);
+        // return $this->options['tokenprefix'].hash_hmac($config['hashalgo'], $token, $config['key']);
+        return $this->options['tokenprefix'] . ':token:' . $token;
     }
 
     /**
@@ -75,7 +76,7 @@ class Redis extends Driver
      */
     protected function getUserKey($user_id)
     {
-        return $this->options['userprefix'].$user_id;
+        return $this->options['userprefix'] . $user_id;
     }
 
     /**
@@ -95,7 +96,9 @@ class Redis extends Driver
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
+
         $key = $this->getEncryptedToken($token);
+
         if ($expire) {
             $result = $this->handler->setex($key, $expire, $user_id);
         } else {
