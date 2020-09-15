@@ -3,17 +3,21 @@
 namespace app\api\controller\Content;
 
 use app\common\controller\Api;
-use think\facade\Validate;
 use think\exception\ValidateException;
 use app\common\model\Content;
+use app\common\model\Orders;
+use app\common\model\TopConfig;
+use think\facade\Config;
+use EasyWeChat\Factory;
+use Order;
 
 /**
  * 首页接口.
  */
 class Feed extends Api
 {
-    protected $noNeedLogin = ['*'];
-    protected $noNeedRight = ['*'];
+    protected $noNeedLogin = [''];
+    protected $noNeedRight = [''];
 
     public function _initialize()
     {
@@ -21,17 +25,17 @@ class Feed extends Api
         $this->model = new Content();
     }
 
+    public function lists()
+    {
+        $params = $this->request->post();
+        $page = $this->request->post('p/d') ?: 1;
+        $pageSize = $this->request->post('ps/d') ?: 10;
+        $list = $this->model->getHomeList([], $page, $pageSize);
+        $this->success('ok', ['list' => $list]);
+    }
+
     public function submit()
     {
-        // $columnId = $this->request->post('column_id');
-        // $content = $this->request->post('content');
-        // $picture = $this->request->post('picture');
-        // $mobile = $this->request->post('mobile');
-        // $contacts = $this->request->post('contacts');
-        // $adress = $this->request->post('address');
-        // $lng = $this->request->post('lng');
-        // $lat = $this->request->post('lat');
-        // $topId = $this->request->post('top_id');
         $params = $this->request->post();
         if ($params) {
             try {
@@ -39,17 +43,37 @@ class Feed extends Api
             } catch (ValidateException $e) {
                 $this->error($e->getMessage());
             }
-            if ($params['top_id']) {
-                $params['top'] = 1;
-            }
             $params['uid'] = $this->auth->uid;
             $result = $this->model->save($params);
             if ($result === false) {
                 $this->error($this->model->getError());
             }
-
-            // $this->success();
+            $params['cid'] = $this->model->id;
+            //新增订单
+            $order = new Orders();
+            $ret = $order->add($params);
+            //生成预支付信息
+            $result = $this->getPrepayInfo([
+                'out_trade_no' => $ret->order_sn,
+                'openid' => $this->auth->openid,
+                'total_fee' => $ret->order_amount,
+            ]);
+            $this->success('ok', $result);
         }
-        // $this->success('ok',$params);
+        $this->error();
+    }
+
+    public function getPrepayInfo(array $data)
+    {
+        $config = Config::get('api.miniprogram.ns');
+        $app = Factory::payment($config);
+        $result = $app->order->unify([
+            'body' => '南沙小程序-发布内容',
+            'out_trade_no' => $data['out_trade_no'],
+            'total_fee' => $data['total_fee'],
+            'trade_type' => 'JSAPI',
+            'openid' => $data['openid'],
+        ]);
+        return $result;
     }
 }

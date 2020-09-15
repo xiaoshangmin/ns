@@ -14,8 +14,17 @@ class Wxuser extends BaseModel
     protected $createTime = 'create_time';
     protected $updateTime = 'update_time';
     // 追加属性
-    protected $append = [
-        
-    ];
+    protected $append = [];
 
+    public function getUserByUids(array $uids): array
+    {
+        if (empty($uids)) {
+            return [];
+        }
+        $uids = join(',', $uids);
+        $list = $this->field([
+            'uid', 'nickname', 'headimgurl'
+        ])->where('uid', 'in', $uids)->select()->toArray();
+        return $list;
+    }
 }

@@ -12,6 +12,7 @@ class Feed extends Validate
     protected $rule = [
         'mobile' => 'require|regex:1\d{10}$',
         'column_id' => 'require|number',
+        'pcolumn_id' => 'require|number',
         'contacts' => 'require',
         'location'    => 'require',
     ];
@@ -23,6 +24,7 @@ class Feed extends Validate
         'mobile.require' => '请输入手机号',
         'mobile.regex' => '错误的手机号',
         'column_id.require' => '栏目错误',
+        'pcolumn_id.require' => '栏目错误',
         'contacts.require' => '请输入联系人',
         'location.require' => '请选择地址信息',
     ];
