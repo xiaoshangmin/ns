@@ -27,4 +27,15 @@ class Wxuser extends BaseModel
         ])->where('uid', 'in', $uids)->select()->toArray();
         return $list;
     }
+
+    public function getUserByUid(int $uid): array
+    {
+        $user = $this->field([
+            'uid', 'nickname', 'headimgurl'
+        ])->where('uid', $uid)->find();
+        if ($user) {
+            return $user->toArray();
+        }
+        return [];
+    }
 }

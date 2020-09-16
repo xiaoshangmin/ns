@@ -2,15 +2,13 @@
 
 namespace app\common\model;
 
-use think\model\concern\SoftDelete;
-
 /**
  * 栏目模型.
  */
-class Columns extends BaseModel
+class Ads extends BaseModel
 {
     // 表名
-    protected $name = 'column';
+    protected $name = 'ads';
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
     // 定义时间戳字段名
@@ -19,9 +17,12 @@ class Columns extends BaseModel
     // 追加属性
     protected $append = [];
 
-    use SoftDelete;
-    protected $deleteTime = 'delete_time';
-    protected $defaultSoftDelete = 0;
+    public function getBannerList()
+    {
+        $condition = ['status' => 1, 'type' => 1];
+        $list = $this->getList($condition);
+        return $list;
+    }
 
     public function getList(array $condition)
     {
@@ -29,11 +30,12 @@ class Columns extends BaseModel
         if (isset($condition['status'])) {
             $where[] = ['status', '=', intval($condition['status'])];
         }
-        if (isset($condition['pid'])) {
-            $where[] = ['pid', '=', intval($condition['pid'])];
+        if (isset($condition['type'])) {
+            $where[] = ['type', '=', intval($condition['type'])];
         }
-        $list = $this->field('id,icon,price,refresh_price,name,create_time')
-            ->where($where)->order('sort', 'desc')->select()->toArray();
+        $list = $this->field('id,type,title,picture,link_type,link_info')
+            ->where($where)->order('sort', 'desc')
+            ->select()->toArray();
         return $list;
     }
 }

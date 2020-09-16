@@ -3,16 +3,11 @@
 namespace app\api\controller\Content;
 
 use app\common\controller\Api;
-use think\exception\ValidateException;
-use app\common\model\Content;
-use app\common\model\Orders;
-use think\facade\Config;
-use EasyWeChat\Factory;
-
+use app\common\model\Comment as CommentModel;
 /**
  * 首页接口.
  */
-class Feed extends Api
+class Comment extends Api
 {
     protected $noNeedLogin = [''];
     protected $noNeedRight = [''];
@@ -21,15 +16,15 @@ class Feed extends Api
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new Content();
+        $this->model = new CommentModel();
     }
 
-    public function lists()
+    public function listPrimary()
     {
         $params = $this->request->post();
         $page = $this->request->post('p/d') ?: 1;
         $pageSize = $this->request->post('ps/d') ?: 10;
-        $list = $this->model->getHomeList([], $page, $pageSize);
+        $list = $this->model->getList($params, $page, $pageSize);
         $this->success('ok', ['list' => $list]);
     }
 
