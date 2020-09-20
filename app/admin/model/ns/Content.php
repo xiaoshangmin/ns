@@ -29,7 +29,8 @@ class Content extends BaseModel
         'top_text',
         'create_time_text',
         'update_time_text',
-        'expiry_time_text'
+        'expiry_time_text',
+        'pay_status_text'
     ];
     
 
@@ -42,6 +43,11 @@ class Content extends BaseModel
     public function getTopList()
     {
         return ['0' => __('Top 0'), '1' => __('Top 1')];
+    }
+
+    public function getPayStatusList()
+    {
+        return ['0' => __('Pay_status 0'), '1' => __('Pay_status 1'), '2' => __('Pay_status 2')];
     }
 
 
@@ -79,6 +85,14 @@ class Content extends BaseModel
     {
         $value = $value ? $value : (isset($data['expiry_time']) ? $data['expiry_time'] : '');
         return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
+    }
+
+
+    public function getPayStatusTextAttr($value, $data)
+    {
+        $value = $value ? $value : (isset($data['pay_status']) ? $data['pay_status'] : '');
+        $list = $this->getPayStatusList();
+        return isset($list[$value]) ? $list[$value] : '';
     }
 
     protected function setCreateTimeAttr($value)

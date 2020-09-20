@@ -11,10 +11,9 @@ class Feed extends Validate
      */
     protected $rule = [
         'mobile' => 'require|regex:1\d{10}$',
-        'column_id' => 'require|number',
-        'pcolumn_id' => 'require|number',
+        'column_ids' => 'require',
         'contacts' => 'require',
-        'location'    => 'require',
+        'address'    => 'require',
     ];
 
     /**
@@ -23,10 +22,9 @@ class Feed extends Validate
     protected $message = [
         'mobile.require' => '请输入手机号',
         'mobile.regex' => '错误的手机号',
-        'column_id.require' => '栏目错误',
-        'pcolumn_id.require' => '栏目错误',
+        'column_ids.require' => '栏目错误',
         'contacts.require' => '请输入联系人',
-        'location.require' => '请选择地址信息',
+        'address.require' => '请选择地址信息',
     ];
 
     /**

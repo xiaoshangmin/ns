@@ -18,8 +18,11 @@ class Content extends BaseModel
 
     public static function onBeforeInsert($model)
     {
-        //置顶
+        //置顶&置顶时间
+        $model->top = 0;
+        $model->expiry_time = 0;
         if ($model->top_id) {
+            $model->expiry_time = (new TopConfig())->getExpiryTimeById($model->top_id);
             $model->top = 1;
         }
     }
@@ -36,13 +39,10 @@ class Content extends BaseModel
         return json_encode($pictures, JSON_UNESCAPED_UNICODE);
     }
 
+
     public function getPicturesAttr($value)
     {
         return json_decode($value, true);
-    }
-
-    public function add(int $uid, array $data)
-    {
     }
 
     public function getById(int $id): array
@@ -54,6 +54,8 @@ class Content extends BaseModel
         if ($detail) {
             $detail = $detail->toArray();
             $detail = $this->formatValue($detail);
+            $columnInfoList = (new ColumnContent())->getRelateColumnListByCids([$detail['id']]);
+            $detail['tags'] = array_merge($detail['tags'], array_column($columnInfoList[$detail['id']], 'name'));
             $user = (new Wxuser())->getUserByUid($detail['uid']);
             $detail['user'] = $user;
             return $detail;
@@ -61,47 +63,48 @@ class Content extends BaseModel
         return [];
     }
 
+    /**
+     * 首页列表数据
+     *
+     * @param array $condition
+     * @param integer $page
+     * @param integer $pageSize
+     * @return array
+     * @author xsm
+     * @since 2020-09-20
+     */
     public function getHomeList(array $condition, int $page, int $pageSize): array
     {
-        $topList = $this->getTopList($condition, $page, $pageSize);
-        $diff = $pageSize - count($topList);
-        if ($diff > 0) {
-            $where = [
-                ['pay_status', '=', 1],
-                ['expiry_time', '<', time()],
-                ['status', '=', 1],
-            ];
-            $list = $this->getList($where, $page, $diff);
+        $columnContent = (new ColumnContent())->getHomeList($condition, $page, $pageSize);
+        $cids = [];
+        if ($columnContent) {
+            $cids = array_unique(array_column($columnContent, 'cid'));
         }
-        $list = array_merge($topList, $list);
+        $list = $this->getByCids($cids);
         return $list;
     }
 
-    public function getTopList(array $condition, int $page, int $pageSize): array
+    public function getByCids(array $cids): array
     {
-        $where = [
-            ['pay_status', '=', 1],
-            ['top', '=', 1],
-            ['expiry_time', '>', time()],
-            ['status', '=', 1],
-        ];
-        if (isset($condition['type'])) {
+        if (empty($cids)) {
+            return [];
         }
-        $list = $this->getList($where, $page, $pageSize);
-        return $list;
-    }
-
-    public function getList(array $where, int $page, int $pageSize): array
-    {
-        $offset = ($page - 1) * $pageSize;
+        $columnInfoList = (new ColumnContent())->getRelateColumnListByCids($cids);
+        $cids = join(',', $cids);
         $lists = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'create_time'
-        ])->where($where)->order('update_time', 'desc')->limit($offset, $pageSize)
+            'view_count', 'address', 'lng', 'lat', 'top', 'create_time'
+        ])->where('id', 'in', $cids)
+            ->order('top', 'desc')
+            ->order('update_time', 'desc')
             ->select()->toArray();
+        if (empty($lists)) {
+            return [];
+        }
         $uids = [];
         foreach ($lists as &$list) {
             $list = $this->formatValue($list);
+            $list['tags'] = array_merge($list['tags'], array_column($columnInfoList[$list['id']], 'name'));
             $uids[] = $list['uid'];
         }
         unset($list);
@@ -117,7 +120,51 @@ class Content extends BaseModel
         return $lists;
     }
 
-    public function formatValue(array $data)
+    public function getList(array $condition, int $page, int $pageSize): array
+    {
+        $where = [];
+        if (isset($condition['uid']) && !empty($condition['uid'])) {
+            $where['uid'] =  intval($condition['uid']);
+        }
+        if (isset($condition['status']) && is_numeric($condition['status'])) {
+            $where['status'] = intval($condition['status']);
+        }
+        if (isset($condition['pay_status']) && is_numeric($condition['pay_status'])) {
+            $where['pay_status'] = intval($condition['pay_status']);
+        }
+        $offset = ($page - 1) * $pageSize;
+        $lists = $this->field([
+            'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
+            'view_count', 'address', 'lng', 'lat', 'create_time', 'top'
+        ])->where($where)->order('update_time', 'desc')->limit($offset, $pageSize)
+            ->select()->toArray();
+        if (empty($lists)) {
+            return [];
+        }
+        $uids = [];
+        foreach ($lists as &$list) {
+            $list = $this->formatValue($list);
+            $uids[] = $list['uid'];
+        }
+        unset($list);
+        $uids = array_unique($uids);
+        $cids = array_column($lists, 'id');
+        $columnInfoList = (new ColumnContent())->getRelateColumnListByCids($cids);
+        //获取用户信息
+        $users = (new Wxuser())->getUserByUids($uids);
+        $users = array_column($users, null, 'uid');
+        foreach ($lists as &$list) {
+            $list['tags'] = array_merge($list['tags'], array_column($columnInfoList[$list['id']], 'name'));
+            $list['user'] = [];
+            if (isset($users[$list['uid']])) {
+                $list['user'] = $users[$list['uid']];
+            }
+        }
+        return $lists;
+    }
+
+
+    public function formatValue(array $data): array
     {
         $config = get_addon_config('cloudstore');
         $qiniuDomain = $config['domain'];
@@ -132,6 +179,30 @@ class Content extends BaseModel
         if (isset($data['create_time']) && !empty($data['create_time'])) {
             $data['create_time_text'] = date('Y-m-d H:i', $data['create_time']);
         }
+        $data['tags'] = [];
+        if (isset($data['top']) && $data['top']) {
+            $data['tags'][] = '置顶';
+        }
+
         return $data;
+    }
+
+    /**
+     * 改变内容支付状态
+     *
+     * @param integer $cid
+     * @param integer $status
+     * @return void
+     * @author xsm
+     * @since 2020-09-20
+     */
+    public function changePayStatus(int $cid, int $status)
+    {
+        $this->where('id', $cid)->save([
+            'pay_status' => $status
+        ]);
+        ColumnContent::where('cid', $cid)->save([
+            'pay_status' => $status
+        ]);
     }
 }

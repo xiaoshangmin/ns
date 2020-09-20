@@ -24,6 +24,7 @@ class Content extends Backend
         $this->model = new \app\admin\model\ns\Content;
         $this->view->assign("statusList", $this->model->getStatusList());
         $this->view->assign("topList", $this->model->getTopList());
+        $this->view->assign("payStatusList", $this->model->getPayStatusList());
     }
     
     /**

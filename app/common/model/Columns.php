@@ -32,6 +32,9 @@ class Columns extends BaseModel
         if (isset($condition['pid'])) {
             $where[] = ['pid', '=', intval($condition['pid'])];
         }
+        if (isset($condition['ids']) && !empty($condition['ids'])) {
+            $where[] = ['id', 'IN', join(',', $condition['ids'])];
+        }
         $list = $this->field('id,icon,price,refresh_price,name,create_time')
             ->where($where)->order('sort', 'desc')->select()->toArray();
         return $list;

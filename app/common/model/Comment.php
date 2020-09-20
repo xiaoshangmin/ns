@@ -18,9 +18,6 @@ class Comment extends BaseModel
 
 
 
-    public function add(int $uid, array $data)
-    {
-    }
 
     public function getById(int $id): array
     {

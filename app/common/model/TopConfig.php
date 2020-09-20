@@ -34,4 +34,27 @@ class TopConfig extends BaseModel
         }
         return $list;
     }
+
+    /**
+     * 获取置顶过期时间
+     *
+     * @param integer $topId
+     * @return integer
+     * @author xsm
+     * @since 2020-09-20
+     */
+    public function getExpiryTimeById(int $topId): int
+    {
+        $topConfig = $this->where('id', $topId)->find();
+        if ($topConfig) {
+            if (1 == $topConfig['type']) {
+                return time() + 86400;
+            } elseif (2 == $topConfig['type']) {
+                return time() + 86400 * 7;
+            } elseif (3 == $topConfig['type']) {
+                return time() + 86400 * 31;
+            }
+        }
+        return 0;
+    }
 }
