@@ -120,8 +120,8 @@ require(['form', 'upload'], function (Form, Upload) {
                             ['fontname', ['color', 'fontname', 'fontsize']],
                             ['para', ['ul', 'ol', 'paragraph', 'height']],
                             ['table', ['table', 'hr']],
-                            ['insert', ['link', 'picture']],//, 'video'
-                            // ['select', ['image', 'attachment']],
+                            ['insert', ['link', 'picture', 'video']],
+                            ['select', ['image', 'attachment']],
                             ['view', ['fullscreen', 'codeview', 'help']],
                         ],
                         buttons: {

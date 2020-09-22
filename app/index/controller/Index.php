@@ -12,13 +12,15 @@ class Index extends Frontend
 
     public function index()
     {
-        return $this->view->fetch();
+        header('Location:/ns');
+        // return $this->view->fetch();
     }
 
     public function news()
     {
-        $newslist = [];
+        header('Location:/ns');
+        // $newslist = [];
 
-        return jsonp(['newslist' => $newslist, 'new' => count($newslist), 'url' => 'https://www.iuok.cn?ref=news']);
+        // return jsonp(['newslist' => $newslist, 'new' => count($newslist), 'url' => 'https://www.iuok.cn?ref=news']);
     }
 }

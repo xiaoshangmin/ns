@@ -63,6 +63,11 @@ class Content extends BaseModel
         return [];
     }
 
+    public function viewInc(int $cid)
+    {
+        $this->where('id', $cid)->inc('view_count', 1)->update();
+    }
+
     /**
      * 首页列表数据
      *

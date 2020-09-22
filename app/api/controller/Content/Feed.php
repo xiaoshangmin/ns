@@ -42,6 +42,7 @@ class Feed extends Api
         //ALTER TABLE ns_content ADD FULLTEXT INDEX ft_index (content) WITH PARSER ngram;
         $cid = $this->request->get('cid/d');
         $detail = $this->model->getById($cid);
+        $this->model->viewInc($cid);
         $this->success('ok', $detail);
     }
 
