@@ -10,7 +10,7 @@ return [
     'Link_type 1' => '内部跳转',
     'Link_type 2' => '外部跳转',
     'Link_type 3' => '关联小程序',
-    'Link_info'   => '跳转内容',
+    'Link_info'   => '跳转地址',
     'Create_time' => '创建时间',
     'Update_time' => '更新时间',
     'Status'      => '状态',

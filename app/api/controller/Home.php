@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\common\controller\Api;
 use app\common\model\Ads;
+use app\common\model\Navigation;
 use app\common\model\Columns;
 
 /**
@@ -30,10 +31,7 @@ class Home extends Api
     {
         // $params = $this->request->post();
         $data['banner'] = (new Ads())->getBannerList();
-        //一级栏目
-        $columns = new Columns();
-        $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
-        $data['pcolumn'] = $pcloumn;
+        $data['navigation'] = (new Navigation())->getNavList();
         $data['notice'] = [
             [
                 'id' => 1, 'title' => '发布须知！',
@@ -42,20 +40,21 @@ class Home extends Api
                 'id' => 2, 'title' => '关于我们',
             ]
         ];
+        //一级栏目
+        $columns = new Columns();
+        $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
+        $data['pcolumn'] = $pcloumn;
         //多级栏目
         $column = $pcloumn;
-        // foreach ($column as &$val) {
-        //     $val['child'] = $columns->getList(['status' => 1, 'pid' => $val['id']]);
-        // }
-        $dropDownItems = [];
-        foreach ($column as $index=>&$val) {
-            $dropDownItems[$index][] = ['text' => $val['name'], 'value' => $val['id']];
+        foreach ($pcloumn as &$val) {
             $child = $columns->getList(['status' => 1, 'pid' => $val['id']]);
-            foreach ($child as $c) {
-                $dropDownItems[$index][] = ['text' => $c['name'], 'value' => $c['id']];
-            }
+            $column = array_merge($column, $child);
         }
-        $data['columns'] = $dropDownItems;
+        $column = [
+            'name' => '全部',
+            'child' => $column,
+        ];
+        $data['columns'] = $column;
         $this->success('ok', $data);
     }
 

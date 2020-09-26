@@ -28,7 +28,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'title', title: __('Title')},
                         {field: 'picture', title: __('Picture')},
                         {field: 'link_type', title: __('Link_type'), searchList: {"1":__('Link_type 1'),"2":__('Link_type 2'),"3":__('Link_type 3')}, formatter: Table.api.formatter.normal},
-                        {field: 'link_info', title: __('Link_info')},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'sort', title: __('Sort')},

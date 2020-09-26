@@ -5,7 +5,7 @@ namespace app\admin\controller\ns;
 use app\common\controller\Backend;
 
 /**
- * 
+ * 导航管理
  *
  * @icon fa fa-circle-o
  */

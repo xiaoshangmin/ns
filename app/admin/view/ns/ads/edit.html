@@ -50,16 +50,21 @@
             <input id="c-link_info" class="form-control" name="row[link_info]" type="text" value="{$row.link_info|htmlentities}">
         </div>
     </div>
-    <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Create_time')}:</label>
+    <div class="form-group" style="color: red;">
+        <label class="control-label col-xs-12 col-sm-2"></label>
         <div class="col-xs-12 col-sm-8">
-            <input id="c-create_time" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[create_time]" type="text" value="{:$row.create_time?datetime($row.create_time):''}">
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Update_time')}:</label>
-        <div class="col-xs-12 col-sm-8">
-            <input id="c-update_time" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[update_time]" type="text" value="{:$row.update_time?datetime($row.update_time):''}">
+            <div id="link1">
+                <p>*跳转商家页面请按以下格式填写,id值在商家列表中获取(../sellerinfo/sellerinfo?id=21)</p>
+                <p>*跳转红包福利页面请按以下格式填写(../redbag/redbag)</p> 
+            </div>
+            {if condition="$row.link_type == 2"}
+            <div id="link2" style="display: none;">
+                <p>*此链接为网页外部跳转链接，需要在小程序后台配置业务域名。</p>
+            </div>
+            {/if}
+            <div id="link3" style="display: none;">
+                <p>*要跳转的小程序appid(只有同一公众号下的关联的小程序之间才可相互跳转)</p>
+            </div>
         </div>
     </div>
     <div class="form-group">

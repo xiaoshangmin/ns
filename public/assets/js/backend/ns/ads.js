@@ -13,7 +13,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     table: 'ads',
                 }
             });
-
+            
             var table = $("#table");
 
             // 初始化表格
@@ -41,15 +41,33 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             // 为表格绑定事件
             Table.api.bindevent(table);
+
         },
         add: function () {
             Controller.api.bindevent();
         },
         edit: function () {
             Controller.api.bindevent();
+            var row = Table.list
+            console.log(row)
         },
         api: {
             bindevent: function () {
+                $('#c-link_type').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+                    if(1 == e.target.value){
+                        $('#link1').show();
+                        $('#link2').hide();
+                        $('#link3').hide();
+                    }else if(2 == e.target.value){
+                        $('#link1').hide();
+                        $('#link2').show();
+                        $('#link3').hide();
+                    }else if(3 == e.target.value){
+                        $('#link1').hide();
+                        $('#link2').hide();
+                        $('#link3').show();
+                    }
+                  });
                 Form.api.bindevent($("form[role=form]"));
             }
         }

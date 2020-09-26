@@ -18,8 +18,8 @@ use EasyWeChat\Factory;
  */
 class Feed extends Api
 {
-    protected $noNeedLogin = [];
-    protected $noNeedRight = [];
+    protected $noNeedLogin = '*';
+    protected $noNeedRight = '*';
     public $model = null;
 
     public function _initialize()
@@ -32,7 +32,7 @@ class Feed extends Api
     {
         $page = $this->request->post('p/d') ?: 1;
         $pageSize = $this->request->post('ps/d') ?: 10;
-        $columnId = $this->request->post('column_id/d') ?: 0;
+        $columnId = $this->request->post('columnId/d') ?: 0;
         $list = $this->model->getHomeList(['column_id' => $columnId], $page, $pageSize);
         $this->success('ok', ['list' => $list]);
     }
