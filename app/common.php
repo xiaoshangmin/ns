@@ -1037,7 +1037,7 @@ if (! function_exists('upload_file')) {
      * @return string|bool
      * @author niu
      */
-    function upload_file($file = null, $name = 'local', $path = '', $validate = '', $url = '/')
+    function upload_file($file = null, $name = 'local', $path = '', $validate = '', $url = '')
     {
         //文件
         if (! $file) {
@@ -1055,11 +1055,11 @@ if (! function_exists('upload_file')) {
         }
         $savename = \think\facade\Filesystem::disk($name)->putFile($path, $file, function ($file) {
             //重命名
-            return date('Ymd').'/'.md5((string) microtime(true));
+            return md5((string) microtime(true));
         });
-        if(empty($url)){
-            $url = '/';
-        }
+        // if(empty($url)){
+        //     $url = '/';
+        // }
         $savename = $url.$savename;
         
         return $savename;

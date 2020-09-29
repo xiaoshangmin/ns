@@ -33,19 +33,9 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Link_infojson')}:</label>
+        <label class="control-label col-xs-12 col-sm-2">{:__('Link_info')}:</label>
         <div class="col-xs-12 col-sm-8">
-            
-            <dl class="fieldlist" data-name="row[link_infojson]">
-                <dd>
-                    <ins>{:__('Key')}</ins>
-                    <ins>{:__('Value')}</ins>
-                </dd>
-                <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>
-                <textarea name="row[link_infojson]" class="form-control hide" cols="30" rows="5">{$row.link_infojson|htmlentities}</textarea>
-            </dl>
-
-
+            <input id="c-link_info" data-rule="required" class="form-control" name="row[link_info]" type="text" value="{$row.link_info|htmlentities}">
         </div>
     </div>
     <div class="form-group">

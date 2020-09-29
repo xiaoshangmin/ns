@@ -45,9 +45,7 @@
         {/if}
     </p>
 </div>
-<div class="copyright">
-    <p>Powered by <a href="https://www.iuok.cn/?ref=jump">YFCMF-TP6</a></p>
-</div>
+
 {if $url}
     <script type="text/javascript">
         (function () {

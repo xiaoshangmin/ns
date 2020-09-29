@@ -133,7 +133,7 @@ class Ajax extends Backend
             $upload = array_merge($upload, $event_config);
         }
         try {
-            $savename = upload_file($file, $upload['driver'], 'uploads', $validate, $upload['cdnurl']);
+            $savename = upload_file($file, $upload['driver'], '', $validate,$upload['cdnurl']);
         } catch (\Exception $e) {
             $savename = false;
             $this->error($e->getMessage());
