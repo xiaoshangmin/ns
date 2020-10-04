@@ -49,7 +49,7 @@ class Content extends BaseModel
     {
         $detail = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'top', 'create_time'
+            'view_count', 'address', 'lng', 'lat', 'top', 'create_time','expiry_time'
         ])->where('id', $id)->where('status', 1)->find();
         if ($detail) {
             $detail = $detail->toArray();
@@ -95,7 +95,7 @@ class Content extends BaseModel
             }
             $lists = $this->getByCids($cids, $uid);
         } else {
-            $topList = $this->getTopList($uid, $page, $pageSize);
+            $topList = $this->getTopList($uid,$condition, $page, $pageSize);
             $diff = $pageSize - count($topList);
             $lists = [];
             if ($diff > 0) {
@@ -104,6 +104,9 @@ class Content extends BaseModel
                     'expiry_time' => ['expiry_time', '<', time()],
                     'status' => 1,
                 ];
+                if(isset($condition['type']) && !empty($condition['type'])){
+                    $where['type'] = intval($condition['type']);
+                }
                 $list = $this->getList($uid, $where,  ['update_time' => 'desc'], $page, $diff);
             }
             $lists = array_merge($topList, $list);
@@ -120,7 +123,7 @@ class Content extends BaseModel
         $cids = join(',', $cids);
         $lists = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'top', 'create_time'
+            'view_count', 'address', 'lng', 'lat', 'top', 'create_time','expiry_time'
         ])->where('id', 'in', $cids)
             ->order('top', 'desc')
             ->order('update_time', 'desc')
@@ -133,7 +136,7 @@ class Content extends BaseModel
         return $lists;
     }
 
-    public function getTopList($uid, int $page, int $pageSize): array
+    public function getTopList(int $uid,array $condition, int $page, int $pageSize): array
     {
         $where = [
             'pay_status' => 1,
@@ -141,6 +144,9 @@ class Content extends BaseModel
             'expiry_time' => ['expiry_time', '>', time()],
             'status' => 1,
         ];
+        if(isset($condition['type']) && !empty($condition['type'])){
+            $where['type'] = intval($condition['type']);
+        } 
         $list = $this->getList($uid, $where, ['update_time' => 'desc'], $page, $pageSize);
         return $list;
     }
@@ -160,13 +166,16 @@ class Content extends BaseModel
         if (isset($condition['top']) && is_numeric($condition['top'])) {
             $where[] = ['top', '=', intval($condition['top'])];
         }
+        if (isset($condition['type']) && !empty($condition['type'])) {
+            $where[] = ['type', '=', intval($condition['type'])];
+        }
         if (isset($condition['expiry_time'])) {
             $where[] = $condition['expiry_time'];
         }
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'create_time', 'top'
+            'view_count', 'address', 'lng', 'lat', 'create_time', 'top','expiry_time'
         ])->where($where)->order($order)->limit($offset, $pageSize)
             ->select()->toArray();
         if (empty($lists)) {
@@ -199,7 +208,7 @@ class Content extends BaseModel
                 $data['create_time_text'] = date('Y-m-d H:i', $data['create_time']);
             }
             $data['tags'] = [];
-            if (isset($data['top']) && $data['top']) {
+            if (isset($data['top']) && $data['top'] && $data['expiry_time'] > time()) {
                 $data['tags'][] = '置顶';
             }
         }

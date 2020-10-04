@@ -46,10 +46,10 @@ class Home extends Api
         $data['pcolumn'] = $pcloumn;
         //多级栏目
         $column = $pcloumn;
-        foreach ($pcloumn as &$val) {
-            $child = $columns->getList(['status' => 1, 'pid' => $val['id']]);
-            $column = array_merge($column, $child);
-        }
+        // foreach ($pcloumn as &$val) {
+        //     $child = $columns->getList(['status' => 1, 'pid' => $val['id']]);
+        //     $column = array_merge($column, $child);
+        // }
         $column = [
             'name' => '全部',
             'child' => $column,

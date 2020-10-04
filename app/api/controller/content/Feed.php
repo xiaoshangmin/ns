@@ -4,7 +4,7 @@ namespace app\api\controller\Content;
 
 use app\common\controller\Api;
 use think\exception\ValidateException;
-use app\common\model\{Content,LikeLog,Orders,Columns,ColumnContent,TopConfig};
+use app\common\model\{Content, LikeLog, Orders, Columns, ColumnContent, TopConfig};
 use think\facade\Config;
 use think\facade\Log;
 use EasyWeChat\Factory;
@@ -30,7 +30,13 @@ class Feed extends Api
         $page = $this->request->post('p/d') ?: 1;
         $pageSize = $this->request->post('ps/d') ?: 10;
         $columnId = $this->request->post('columnId/d') ?: 0;
-        $list = $this->model->getHomeList($this->auth->uid, ['column_id' => $columnId], $page, $pageSize);
+        $type = $this->request->post('type/d') ?: 1;
+        $list = $this->model->getHomeList(
+            $this->auth->uid,
+            ['column_id' => $columnId, 'type' => $type],
+            $page,
+            $pageSize
+        );
         $this->success('ok', ['list' => $list]);
     }
 
@@ -38,7 +44,7 @@ class Feed extends Api
     {
         //ALTER TABLE ns_content ADD FULLTEXT INDEX ft_index (content) WITH PARSER ngram;
         $cid = $this->request->get('cid/d');
-        $detail = $this->model->getById($cid,$this->auth->uid);
+        $detail = $this->model->getById($cid, $this->auth->uid);
         $this->model->viewInc($cid);
         $this->success('ok', $detail);
     }
