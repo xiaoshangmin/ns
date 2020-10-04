@@ -8,13 +8,13 @@ use app\common\model\BaseModel;
 class Content extends BaseModel
 {
 
-    
 
-    
+
+
 
     // 表名
     protected $name = 'content';
-    
+
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
 
@@ -30,36 +30,55 @@ class Content extends BaseModel
         'expiry_time_text',
         'status_text',
         'top_text',
-        'pay_status_text'
+        'pay_status_text',
+        'pcolumn_id',
+        'column_id'
     ];
-    
+
+    public function getPcolumnIdAttr($value, $data)
+    {
+        if ($data['column_ids']) {
+            $columnIds = explode(',', $data['column_ids']);
+            return $columnIds[0] ?? 0;
+        }
+        return 0;
+    }
+
+    public function getColumnIdAttr($value, $data)
+    {
+        if ($data['column_ids']) {
+            $columnIds = explode(',', $data['column_ids']);
+            return $columnIds[1] ?? 0;
+        }
+        return 0;
+    }
 
     public function getPicturesAttr($value, $data)
     {
-        if($value){
+        if ($value) {
             $config = get_addon_config('cloudstore');
             $qiniuDomain = $config['domain'];
-            $pictures = json_decode($value,true);
+            $pictures = json_decode($value, true);
             $pics = [];
-            foreach($pictures as $pic){
+            foreach ($pictures as $pic) {
                 $pics[] = $qiniuDomain . '/' . $pic['key'];
             }
-            return join(',',$pics);
+            return join(',', $pics);
         }
         return '';
     }
-    
+
     public function setPicturesAttr($value)
     {
         $keys = [];
-        if($value){
-            $pics = explode(',',$value);
-            foreach($pics as $pic){
-                $basename = pathinfo($pic,PATHINFO_BASENAME);
-                $keys[] = ['key'=>$basename];
+        if ($value) {
+            $pics = explode(',', $value);
+            foreach ($pics as $pic) {
+                $basename = pathinfo($pic, PATHINFO_BASENAME);
+                $keys[] = ['key' => $basename];
             }
         }
-        return json_encode($keys,JSON_UNESCAPED_UNICODE);
+        return json_encode($keys, JSON_UNESCAPED_UNICODE);
     }
 
     public function getStatusList()
@@ -122,11 +141,6 @@ class Content extends BaseModel
         return isset($list[$value]) ? $list[$value] : '';
     }
 
-    protected function setCreateTimeAttr($value)
-    {
-        return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
-    }
-
     protected function setUpdateTimeAttr($value)
     {
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
@@ -136,6 +150,4 @@ class Content extends BaseModel
     {
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
-
-
 }

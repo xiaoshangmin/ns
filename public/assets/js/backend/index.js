@@ -128,11 +128,11 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'adminlte', 'form'], functi
             //读取版本检测信息
             var ignoreversion = localStorage.getItem("ignoreversion");
             if (Config.fastadmin.checkupdate && ignoreversion !== "*") {
-                checkupdate(ignoreversion, false);
+                // checkupdate(ignoreversion, false);
             }
             //手动检测版本信息
             $("a[data-toggle='checkupdate']").on('click', function () {
-                checkupdate('', true);
+                // checkupdate('', true);
             });
 
             //切换左侧sidebar显示隐藏

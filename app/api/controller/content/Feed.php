@@ -4,22 +4,19 @@ namespace app\api\controller\Content;
 
 use app\common\controller\Api;
 use think\exception\ValidateException;
-use app\common\model\Content;
-use app\common\model\Orders;
-use app\common\model\Columns;
-use app\common\model\ColumnContent;
-use app\common\model\TopConfig;
+use app\common\model\{Content,LikeLog,Orders,Columns,ColumnContent,TopConfig};
 use think\facade\Config;
 use think\facade\Log;
 use EasyWeChat\Factory;
+use think\facade\Cache;
 
 /**
  * 首页接口.
  */
 class Feed extends Api
 {
-    protected $noNeedLogin = '*';
-    protected $noNeedRight = '*';
+    protected $noNeedLogin = [];
+    protected $noNeedRight = [];
     public $model = null;
 
     public function _initialize()
@@ -33,7 +30,7 @@ class Feed extends Api
         $page = $this->request->post('p/d') ?: 1;
         $pageSize = $this->request->post('ps/d') ?: 10;
         $columnId = $this->request->post('columnId/d') ?: 0;
-        $list = $this->model->getHomeList(['column_id' => $columnId], $page, $pageSize);
+        $list = $this->model->getHomeList($this->auth->uid, ['column_id' => $columnId], $page, $pageSize);
         $this->success('ok', ['list' => $list]);
     }
 
@@ -41,13 +38,36 @@ class Feed extends Api
     {
         //ALTER TABLE ns_content ADD FULLTEXT INDEX ft_index (content) WITH PARSER ngram;
         $cid = $this->request->get('cid/d');
-        $detail = $this->model->getById($cid);
+        $detail = $this->model->getById($cid,$this->auth->uid);
         $this->model->viewInc($cid);
         $this->success('ok', $detail);
     }
 
+    public function like()
+    {
+        //加锁防止频繁点击
+        Cache::store('redis')->handler();
+        $cid = $this->request->post('cid/d');
+        if (false === (new LikeLog())->isLike($this->auth->uid, $cid, LikeLog::CONTENT_LIKE_TYPE)) {
+            $this->model->likeInc($cid);
+            (new LikeLog())->addLog($this->auth->uid, $cid, LikeLog::CONTENT_LIKE_TYPE);
+        }
+        $this->success();
+    }
+
+    public function unlike()
+    {
+        //加锁防止频繁点击
+        Cache::store('redis')->handler();
+        $cid = $this->request->post('cid/d');
+        $this->model->likeDec($cid);
+        (new LikeLog())->removeLog($this->auth->uid, $cid, LikeLog::CONTENT_LIKE_TYPE);
+        $this->success();
+    }
+
     public function submit()
     {
+        //加锁
         $params = $this->request->post();
         $log = 'submit:' . json_encode($params, JSON_UNESCAPED_UNICODE);
         Log::record($log);

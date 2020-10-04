@@ -1,9 +1,16 @@
 <form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
 
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Uid')}:</label>
-        <div class="col-xs-12 col-sm-8">
-            <input id="c-uid" data-rule="required" class="form-control" name="row[uid]" type="number" value="{$row.uid|htmlentities}">
+        <label class="control-label col-xs-12 col-sm-2">栏目:</label>
+        <div class="col-xs-12 col-sm-8"> 
+            <div class="form-inline" data-toggle="cxselect" data-selects="first,second">
+                <select class="first form-control" name="row[pcolumn_id]" data-url="ns.column/cxselect?pid=0">
+                    <option value="{$row.pcolumn_id}" selected=""></option>
+                </select>
+                <select class="second form-control" name="row[column_id]" data-url="ns.column/cxselect" data-query-name="pid">
+                    <option value="{$row.column_id}" selected=""></option>
+                </select>
+            </div>
         </div>
     </div>
     <div class="form-group">
@@ -21,17 +28,17 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Content')}:</label>
         <div class="col-xs-12 col-sm-8">
-            <textarea id="c-content" class="form-control editor" rows="5" name="row[content]" cols="50">{$row.content|htmlentities}</textarea>
+            <textarea id="c-content" class="form-control editor" rows="5" name="row[content]" cols="50">{$row.content}</textarea>
         </div>
     </div>
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Pictures')}:</label>
         <div class="col-xs-12 col-sm-8">
             <div class="input-group">
-                <input id="c-pictures" class="form-control" size="50" name="row[pictures]" type="text" value="{$row.pictures|htmlentities}">
+                <input id="c-pictures" class="form-control" size="50" name="row[pictures]" type="text" value="{$row.pictures|htmlentities}" readonly>
                 <div class="input-group-addon no-border no-padding">
-                    <span><button type="button" id="plupload-pictures" class="btn btn-danger plupload" data-input-id="c-pictures" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-multiple="true" data-preview-id="p-pictures"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
-                    <span><button type="button" id="fachoose-pictures" class="btn btn-primary fachoose" data-input-id="c-pictures" data-mimetype="image/*" data-multiple="true"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                    <span><button data-maxcount="9" type="button" id="plupload-pictures" class="btn btn-danger plupload" data-input-id="c-pictures" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-multiple="true" data-preview-id="p-pictures"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                    <span><button data-maxcount="9" type="button" id="fachoose-pictures" class="btn btn-primary fachoose" data-input-id="c-pictures" data-mimetype="image/*" data-multiple="true"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
                 </div>
                 <span class="msg-box n-right" for="c-pictures"></span>
             </div>
@@ -68,7 +75,7 @@
             <input id="c-address" data-rule="required" class="form-control" name="row[address]" type="text" value="{$row.address|htmlentities}">
         </div>
     </div>
-    <div class="form-group">
+    <!-- <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Lng')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-lng" data-rule="required" class="form-control" step="0.000001" name="row[lng]" type="number" value="{$row.lng|htmlentities}">
@@ -91,13 +98,8 @@
         <div class="col-xs-12 col-sm-8">
             <input id="c-update_time" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[update_time]" type="text" value="{:$row.update_time?datetime($row.update_time):''}">
         </div>
-    </div>
-    <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Expiry_time')}:</label>
-        <div class="col-xs-12 col-sm-8">
-            <input id="c-expiry_time" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[expiry_time]" type="text" value="{:$row.expiry_time?datetime($row.expiry_time):''}">
-        </div>
-    </div>
+    </div> -->
+   
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
         <div class="col-xs-12 col-sm-8">
@@ -105,6 +107,18 @@
             <div class="radio">
             {foreach name="statusList" item="vo"}
             <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status"}checked{/in} /> {$vo}</label> 
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pay_status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            
+            <div class="radio">
+            {foreach name="payStatusList" item="vo"}
+            <label for="row[pay_status]-{$key}"><input id="row[pay_status]-{$key}" name="row[pay_status]" type="radio" value="{$key}" {in name="key" value="$row.pay_status"}checked{/in} /> {$vo}</label> 
             {/foreach}
             </div>
 
@@ -123,17 +137,12 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Pay_status')}:</label>
+        <label class="control-label col-xs-12 col-sm-2">{:__('Expiry_time')}:</label>
         <div class="col-xs-12 col-sm-8">
-            
-            <div class="radio">
-            {foreach name="payStatusList" item="vo"}
-            <label for="row[pay_status]-{$key}"><input id="row[pay_status]-{$key}" name="row[pay_status]" type="radio" value="{$key}" {in name="key" value="$row.pay_status"}checked{/in} /> {$vo}</label> 
-            {/foreach}
-            </div>
-
+            <input id="c-expiry_time" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[expiry_time]" type="text" value="{:$row.expiry_time?datetime($row.expiry_time):''}">
         </div>
     </div>
+    
     <div class="form-group layer-footer">
         <label class="control-label col-xs-12 col-sm-2"></label>
         <div class="col-xs-12 col-sm-8">

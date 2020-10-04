@@ -3,6 +3,7 @@
 namespace app\admin\controller\ns;
 
 use app\common\controller\Backend;
+use think\facade\Db;
 
 /**
  * 
@@ -30,6 +31,19 @@ class Column extends Backend
      * 因此在当前控制器中可不用编写增删改查的代码,除非需要自己控制这部分逻辑
      * 需要将application/admin/library/traits/Backend.php中对应的方法复制到当前控制器,然后进行修改
      */
+
     
+    public function cxselect()
+    { 
+        $pid = $this->request->get('pid');
+        $where = ['status' => 1];
+        $categorylist = null;
+         
+        if ($pid !== '') {
+            $where['pid'] = $pid;
+            $categorylist = Db::name('column')->where($where)->field('id as value,name')->order('id desc')->select();
+        }
+        $this->success('', null, $categorylist);
+    }
 
 }

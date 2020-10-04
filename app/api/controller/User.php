@@ -20,6 +20,7 @@ class User extends Api
         $status = $this->request->post('status');
         $list = (new Content())->getList(
             ['uid' => $this->auth->uid, 'pay_status' => 1, 'status' => $status],
+            ['update_time'=>'desc'],
             $page,
             $pageSize
         );

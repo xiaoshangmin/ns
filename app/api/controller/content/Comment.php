@@ -21,6 +21,13 @@ class Comment extends Api
         $this->model = new CommentModel();
     }
 
+    /**
+     * 评论列表
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-10-01
+     */
     public function listPrimary()
     {
         $params = $this->request->post();
