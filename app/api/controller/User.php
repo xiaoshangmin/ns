@@ -19,6 +19,7 @@ class User extends Api
         $pageSize = $this->request->post('ps/d') ?: 10;
         $status = $this->request->post('status');
         $list = (new Content())->getList(
+            $this->auth->uid,
             ['uid' => $this->auth->uid, 'pay_status' => 1, 'status' => $status],
             ['update_time'=>'desc'],
             $page,
