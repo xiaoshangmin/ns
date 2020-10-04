@@ -135,7 +135,7 @@ class Api
         $actionname = strtolower($this->request->action());
 
         // token
-        $token = 'd02ba18f-e3ab-4387-9167-39520b831be8';//$this->request->server('HTTP_TOKEN', $this->request->request('token', \think\facade\Cookie::get('token')));
+        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\facade\Cookie::get('token')));
 
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
         // // 设置当前请求的URI
