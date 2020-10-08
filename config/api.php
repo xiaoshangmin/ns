@@ -12,7 +12,7 @@ return [
             // 下面为可选项
             // 指定 API 调用返回结果的类型：array(default)/collection/object/raw/自定义类名
             'response_type' => 'array',
-            'notify_url'         => 'https://wowyou.cc',
+            'notify_url'         => 'http://buluo.wociao.xyz/api/wx/paynotify',
             'log' => [
                 'level' => 'debug',
                 'file' => app()->getRuntimePath() . 'log/' . date('Ymd') . '/wechat.log',
