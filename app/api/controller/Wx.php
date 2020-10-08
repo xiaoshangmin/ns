@@ -33,6 +33,12 @@ class Wx extends Api
      */
     public function paynotify()
     {
+        /**
+         * paynotify:{"appid":"wx09084239f923da22","bank_type":"CMB_CREDIT","cash_fee":"1","fee_type":"CNY","is_subscribe":"N",
+         * "mch_id":"1525986001","nonce_str":"5f7ed4051b587","openid":"otthZ5JkDfCuIBojzSAaB1c30cYc","out_trade_no":"202010081655328116",
+         * "result_code":"SUCCESS","return_code":"SUCCESS","sign":"9A2AFAF4CE6C411820E31B23F56F3040","time_end":"20201008165607",
+         * "total_fee":"1","trade_type":"JSAPI","transaction_id":"4200000682202010080330249585"}
+         */
         //回调判断
         $config = Config::get('api.miniprogram.ns');
         $app = Factory::payment($config);
