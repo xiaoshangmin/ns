@@ -3,25 +3,26 @@
 namespace app\admin\model\ns;
 
 use app\common\model\BaseModel;
-
+use think\model\concern\SoftDelete;
 
 class Column extends BaseModel
 {
 
-    
 
-    
 
+
+    use SoftDelete;
     // 表名
     protected $name = 'column';
-    
+
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
 
     // 定义时间戳字段名
-    protected $createTime = false;
-    protected $updateTime = false;
-    protected $deleteTime = false;
+    protected $createTime = 'create_time';
+    protected $updateTime = 'update_time';
+    protected $deleteTime = 'delete_time';
+    protected $defaultSoftDelete = 0;
 
     // 追加属性
     protected $append = [
@@ -30,12 +31,53 @@ class Column extends BaseModel
         'delete_time_text',
         'status_text'
     ];
-    
 
-    
+
+
     public function getStatusList()
     {
         return ['0' => __('Status 0'), '1' => __('Status 1')];
+    }
+
+    public function getPcloumnList()
+    {
+        return $this->field('id,name')->where('pid', 0)->select()->toArray();
+    }
+
+    public function getTreeList()
+    {
+        $total = $this->order('id', 'desc')->select()->toArray();
+        $treeList = [];
+        $pList = $this->getChild(0, $total);
+
+        foreach ($pList as $data) {
+            $child = $this->getChild($data['id'], $total);
+            if ($data['id']) {
+                $treeList[] = $data;
+            }
+            if ($child) {
+                $treeList = array_merge($treeList, $child);
+            }
+        }
+        return $treeList;
+    }
+
+    public function getChild(int $myid, array $data): array
+    {
+        $newarr = [];
+        foreach ($data as $value) {
+            if (!isset($value['id'])) {
+                continue;
+            }
+            if ($value['pid'] == $myid) {
+                if ($myid > 0) {
+                    $value['name'] = "└" . $value['name'];
+                }
+                $newarr[$value['id']] = $value;
+            }
+        }
+
+        return $newarr;
     }
 
 
@@ -82,5 +124,19 @@ class Column extends BaseModel
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 
+    protected function setPriceAttr($value, $data)
+    {
+        if ($data['pid'] > 0) {
+            return 0;
+        }
+        return $value;
+    }
 
+    protected function setRefreshPriceAttr($value, $data)
+    {
+        if ($data['pid'] > 0) {
+            return 0;
+        }
+        return $value;
+    }
 }

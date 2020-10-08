@@ -2,8 +2,6 @@
 
 namespace app\common\model;
 
-use think\model\concern\SoftDelete;
-
 /**
  * 栏目模型.
  */
@@ -18,14 +16,12 @@ class Columns extends BaseModel
     protected $updateTime = 'update_time';
     // 追加属性
     protected $append = [];
-
-    use SoftDelete;
-    protected $deleteTime = 'delete_time';
-    protected $defaultSoftDelete = 0;
+ 
+    protected $deleteTime = 'delete_time'; 
 
     public function getList(array $condition)
     {
-        $where = [];
+        $where[] = ['delete_time','=','0'];
         if (isset($condition['status'])) {
             $where[] = ['status', '=', intval($condition['status'])];
         }

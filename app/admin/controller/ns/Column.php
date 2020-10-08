@@ -24,6 +24,10 @@ class Column extends Backend
         parent::_initialize();
         $this->model = new \app\admin\model\ns\Column;
         $this->view->assign("statusList", $this->model->getStatusList());
+        $pcolumnList = $this->model->getPcloumnList();
+        $pcolumnList = array_column($pcolumnList,'name','id');
+        $pcolumnList[0] = __('None');
+        $this->view->assign("pcolumnList", $pcolumnList);
     }
     
     /**
@@ -44,6 +48,23 @@ class Column extends Backend
             $categorylist = Db::name('column')->where($where)->field('id as value,name')->order('id desc')->select();
         }
         $this->success('', null, $categorylist);
+    }
+
+    /**
+     * 查看.
+     */
+    public function index()
+    {
+        if ($this->request->isAjax()) {
+            $list  = $this->model->getTreeList();
+            $total = count($list);
+
+            $result = ['total' => $total, 'rows' => $list];
+
+            return json($result);
+        }
+
+        return $this->view->fetch();
     }
 
 }

@@ -18,22 +18,26 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             // 初始化表格
             table.bootstrapTable({
+                search:false,
+                showToggle: false,
+                showColumns: false,
+                searchFormVisible: true,
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
                 columns: [
                     [
                         {checkbox: true},
-                        {field: 'id', title: __('Id')},
+                        {field: 'id', title: __('Id'),operate: false},
                         {field: 'uid', title: __('Uid')},
                         {field: 'mobile', title: __('Mobile')},
                         {field: 'contacts', title: __('Contacts')},
-                        {field: 'pictures', title: __('Pictures'),events: Table.api.events.image, formatter: Table.api.formatter.images},
-                        {field: 'like_count', title: __('Like_count')},
+                        {field: 'pictures', title: __('Pictures'),events: Table.api.events.image, formatter: Table.api.formatter.images,operate: false},
+                        {field: 'like_count', title: __('Like_count'),operate: false},
                         // {field: 'share_count', title: __('Share_count')},
                         // {field: 'comment_count', title: __('Comment_count')},
-                        {field: 'view_count', title: __('View_count')},
-                        {field: 'address', title: __('Address')},
+                        {field: 'view_count', title: __('View_count'),operate: false},
+                        {field: 'address', title: __('Address'),operate: false},
                         // {field: 'lng', title: __('Lng'), operate:'BETWEEN'},
                         // {field: 'lat', title: __('Lat'), operate:'BETWEEN'},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},

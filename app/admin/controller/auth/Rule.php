@@ -55,7 +55,7 @@ class Rule extends Backend
     public function index()
     {
         if ($this->request->isAjax()) {
-            $list  = $this->rulelist;
+            $list  = $this->rulelist; 
             $total = count($this->rulelist);
 
             $result = ['total' => $total, 'rows' => $list];
