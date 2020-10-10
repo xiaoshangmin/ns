@@ -5,10 +5,9 @@ namespace app\api\controller\Content;
 use app\common\controller\Api;
 use think\exception\ValidateException;
 use app\common\model\{Content, LikeLog, Orders, Columns, ColumnContent, TopConfig};
-use think\facade\Config;
-use think\facade\Log;
+use think\facade\{Config, Log, Cache};
 use EasyWeChat\Factory;
-use think\facade\Cache;
+use Geohash;
 
 /**
  * 首页接口.
@@ -34,6 +33,29 @@ class Feed extends Api
         $list = $this->model->getHomeList(
             $this->auth->uid,
             ['column_id' => $columnId, 'type' => $type],
+            $page,
+            $pageSize
+        );
+        $this->success('ok', ['list' => $list]);
+    }
+
+
+    public function nearby()
+    {
+        $page = $this->request->post('p/d') ?: 1;
+        $pageSize = $this->request->post('ps/d') ?: 10;
+        $lat = $this->request->post('lat/f') ?: 0;
+        $lng = $this->request->post('lng/f') ?: 0;
+        $geohash = '';
+        if ($lat && $lng) {
+            $geohash = new Geohash();
+            $geohash = $geohash->encode($lat, $lng);
+            //附近，参数n代表Geohash，精确的位数，也就是大概距离；n=6时候，大概为附近1千米
+            $geohash = substr($geohash, 0, 5);
+        }
+        $list = $this->model->getNearBy(
+            $this->auth->uid,
+            ['type' =>1, 'geohash' => $geohash],
             $page,
             $pageSize
         );
@@ -96,6 +118,8 @@ class Feed extends Api
                 $orderAmount = bcadd($orderAmount, $columnInfo['price']);
             }
             unset($cloumnId);
+            $geohash = new Geohash();
+            $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
             //保存内容主体信息
             $result = $this->model->save($params);
             if ($result === false) {
@@ -151,8 +175,8 @@ class Feed extends Api
     {
         $config = Config::get('api.miniprogram.ns');
         $app = Factory::payment($config);
-        $totalFee = bcmul($data['total_fee'] , 100);
-        if($data['openid'] == 'otthZ5JkDfCuIBojzSAaB1c30cYc'){
+        $totalFee = bcmul($data['total_fee'], 100);
+        if ($data['openid'] == 'otthZ5JkDfCuIBojzSAaB1c30cYc') {
             $totalFee = 1;
         }
         $result = $app->order->unify([

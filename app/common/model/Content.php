@@ -49,7 +49,7 @@ class Content extends BaseModel
     {
         $detail = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'top', 'create_time','expiry_time'
+            'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time'
         ])->where('id', $id)->where('status', 1)->find();
         if ($detail) {
             $detail = $detail->toArray();
@@ -95,7 +95,7 @@ class Content extends BaseModel
             }
             $lists = $this->getByCids($cids, $uid);
         } else {
-            $topList = $this->getTopList($uid,$condition, $page, $pageSize);
+            $topList = $this->getTopList($uid, $condition, $page, $pageSize);
             $diff = $pageSize - count($topList);
             $lists = [];
             if ($diff > 0) {
@@ -104,7 +104,7 @@ class Content extends BaseModel
                     'expiry_time' => ['expiry_time', '<', time()],
                     'status' => 1,
                 ];
-                if(isset($condition['type']) && !empty($condition['type'])){
+                if (isset($condition['type']) && !empty($condition['type'])) {
                     $where['type'] = intval($condition['type']);
                 }
                 $list = $this->getList($uid, $where,  ['update_time' => 'desc'], $page, $diff);
@@ -112,6 +112,39 @@ class Content extends BaseModel
             $lists = array_merge($topList, $list);
         }
 
+        return $lists;
+    }
+
+    /**
+     * 附近的消息
+     *
+     * @param integer $uid
+     * @param array $condition
+     * @param integer $page
+     * @param integer $pageSize
+     * @return array
+     * @author xsm
+     * @since 2020-10-10
+     */
+    public function getNearBy(int $uid, array $condition, int $page, int $pageSize): array
+    {
+        $where = [
+            'pay_status' => 1,
+            'status' => 1,
+        ];
+        if (isset($condition['type']) && !empty($condition['type'])) {
+            $where['type'] = intval($condition['type']);
+        }
+        if (isset($condition['geohash']) && !empty($condition['geohash'])) {
+            $where['geohash'] = ['geohash', 'like', "{$condition['geohash']}%"];
+        }
+        $lists = $this->getList($uid, $where,  ['update_time' => 'desc'], $page, $pageSize);
+        //移除置顶标签
+        foreach($lists as &$list){
+            if(isset($list['tags'][0]) && $list['tags'][0] == '置顶'){
+                array_shift($list['tags']);
+            }
+        }
         return $lists;
     }
 
@@ -123,7 +156,7 @@ class Content extends BaseModel
         $cids = join(',', $cids);
         $lists = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'top', 'create_time','expiry_time'
+            'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time'
         ])->where('id', 'in', $cids)
             ->order('top', 'desc')
             ->order('update_time', 'desc')
@@ -136,7 +169,7 @@ class Content extends BaseModel
         return $lists;
     }
 
-    public function getTopList(int $uid,array $condition, int $page, int $pageSize): array
+    public function getTopList(int $uid, array $condition, int $page, int $pageSize): array
     {
         $where = [
             'pay_status' => 1,
@@ -144,9 +177,9 @@ class Content extends BaseModel
             'expiry_time' => ['expiry_time', '>', time()],
             'status' => 1,
         ];
-        if(isset($condition['type']) && !empty($condition['type'])){
+        if (isset($condition['type']) && !empty($condition['type'])) {
             $where['type'] = intval($condition['type']);
-        } 
+        }
         $list = $this->getList($uid, $where, ['update_time' => 'desc'], $page, $pageSize);
         return $list;
     }
@@ -172,10 +205,13 @@ class Content extends BaseModel
         if (isset($condition['expiry_time'])) {
             $where[] = $condition['expiry_time'];
         }
+        if (isset($condition['geohash'])) {
+            $where[] = $condition['geohash'];
+        }
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'create_time', 'top','expiry_time'
+            'view_count', 'address', 'lng', 'lat', 'create_time', 'top', 'expiry_time'
         ])->where($where)->order($order)->limit($offset, $pageSize)
             ->select()->toArray();
         if (empty($lists)) {

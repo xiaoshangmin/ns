@@ -3,6 +3,7 @@
 namespace app\api\controller;
 
 use app\common\controller\Api;
+use Geohash;
 
 /**
  * 示例接口.
@@ -47,7 +48,8 @@ class Demo extends Api
      */
     public function test1()
     {
-        $this->success('返回成功', ['action' => 'test1']);
+        
+        $this->success('返回成功', ['action' => $geohash_val]);
     }
 
     /**
