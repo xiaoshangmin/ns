@@ -17,11 +17,34 @@ class Ads extends BaseModel
     // 追加属性
     protected $append = [];
 
+    /**
+     * banner位广告
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-10-11
+     */
     public function getBannerList()
     {
         $condition = ['status' => 1, 'type' => 1];
         $list = $this->getList($condition);
         return $list;
+    }
+
+    /**
+     * 弹窗广告
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-10-11
+     */
+    public function getPopupList()
+    {
+        $condition = ['status' => 1, 'type' => 2];
+        $detail = $this->field('id,type,title,picture,link_type,link_info')
+            ->where($condition)
+            ->find();
+        return $detail;
     }
 
     public function getList(array $condition)
@@ -38,4 +61,5 @@ class Ads extends BaseModel
             ->select()->toArray();
         return $list;
     }
+ 
 }

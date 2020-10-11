@@ -79,7 +79,7 @@ class Comment extends BaseModel
      */
     public function getChildList(array $condition, int $page, int $pageSize): array
     {
-        $where = ['delete_time', '=', '0'];
+        $where = [['delete_time', '=', '0']];
         if (isset($condition['pid']) && !empty($condition['pid'])) {
             $where[] = ['pid', 'IN', $condition['pid']];
         } else {

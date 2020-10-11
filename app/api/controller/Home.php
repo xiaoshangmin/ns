@@ -31,6 +31,7 @@ class Home extends Api
     {
         // $params = $this->request->post();
         $data['banner'] = (new Ads())->getBannerList();
+        $data['popup'] = (new Ads())->getPopupList();
         $data['navigation'] = (new Navigation())->getNavList();
         $data['notice'] = [
             [
