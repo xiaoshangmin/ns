@@ -107,6 +107,9 @@ class Content extends BaseModel
                 if (isset($condition['type']) && !empty($condition['type'])) {
                     $where['type'] = intval($condition['type']);
                 }
+                if (isset($condition['keyword']) && !empty($condition['keyword'])) {
+                    $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
+                }
                 $list = $this->getList($uid, $where,  ['update_time' => 'desc'], $page, $diff);
             }
             $lists = array_merge($topList, $list);
@@ -148,6 +151,20 @@ class Content extends BaseModel
         return $lists;
     }
 
+
+    public function getListByFullIndex(int $uid,int $columnId, string $keyword, int $page, int $pageSize)
+    {
+        $offset = ($page - 1) * $pageSize;
+        $limit = "{$offset},{$pageSize}";
+    //     $sql = "SELECT id FROM ns_content WHERE FIND_IN_SET({$columnId},column_ids) AND
+    //                 MATCH (content)
+    // AGAINST ('{$keyword}') LIMIT {$limit}";
+    // echo $sql;exit();
+        $lists = $this->whereRaw("FIND_IN_SET({$columnId},column_ids) AND pay_status=1 AND status=1 AND MATCH (content) AGAINST ('{$keyword}')")->select()->toArray();
+        $lists = (new Content())->formatMultiValue($lists, $uid);
+        return $lists;
+    }
+
     public function getByCids(array $cids, int $uid): array
     {
         if (empty($cids)) {
@@ -180,6 +197,9 @@ class Content extends BaseModel
         if (isset($condition['type']) && !empty($condition['type'])) {
             $where['type'] = intval($condition['type']);
         }
+        if (isset($condition['keyword']) && !empty($condition['keyword'])) {
+            $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
+        }
         $list = $this->getList($uid, $where, ['update_time' => 'desc'], $page, $pageSize);
         return $list;
     }
@@ -201,6 +221,9 @@ class Content extends BaseModel
         }
         if (isset($condition['type']) && !empty($condition['type'])) {
             $where[] = ['type', '=', intval($condition['type'])];
+        }
+        if (isset($condition['keyword'])) {
+            $where[] = $condition['keyword'];
         }
         if (isset($condition['expiry_time'])) {
             $where[] = $condition['expiry_time'];

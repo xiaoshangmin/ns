@@ -30,12 +30,23 @@ class Feed extends Api
         $pageSize = $this->request->post('ps/d') ?: 10;
         $columnId = $this->request->post('columnId/d') ?: 0;
         $type = $this->request->post('type/d') ?: 1;
-        $list = $this->model->getHomeList(
-            $this->auth->uid,
-            ['column_id' => $columnId, 'type' => $type],
-            $page,
-            $pageSize
-        );
+        $keyword = $this->request->post('keyword/s');
+        if ($keyword) {
+            $list = $this->model->getListByFullIndex(
+                $this->auth->uid,
+                $columnId,
+                $keyword,
+                $page,
+                $pageSize
+            );
+        } else {
+            $list = $this->model->getHomeList(
+                $this->auth->uid,
+                ['column_id' => $columnId, 'type' => $type, 'keyword' => $keyword],
+                $page,
+                $pageSize
+            );
+        }
         $this->success('ok', ['list' => $list]);
     }
 
@@ -55,7 +66,7 @@ class Feed extends Api
         }
         $list = $this->model->getNearBy(
             $this->auth->uid,
-            ['type' =>1, 'geohash' => $geohash],
+            ['type' => 1, 'geohash' => $geohash],
             $page,
             $pageSize
         );

@@ -59,23 +59,5 @@ class Home extends Api
         $this->success('ok', $data);
     }
 
-    /**
-     * 专栏列表
-     *
-     * @return void
-     * @author xsm
-     * @since 2020-09-19
-     */
-    public function columnList()
-    {
-        //一级栏目
-        $columns = new Columns();
-        $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
-        $child = [];
-        //多级栏目 
-        foreach ($pcloumn as &$val) {
-            $child[$val['id']] = $columns->getList(['status' => 1, 'pid' => $val['id']]);
-        }
-        $this->success('ok', ['pcloumn' => $pcloumn, 'child' => $child]);
-    }
+    
 }
