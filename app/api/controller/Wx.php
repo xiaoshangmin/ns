@@ -5,11 +5,9 @@ namespace app\api\controller;
 use app\common\controller\Api;
 use EasyWeChat\Factory;
 use think\facade\Config;
-use app\common\model\Content;
-use app\common\model\ColumnContent;
+use app\common\model\Content; 
 use think\facade\Log;
-use app\common\model\Orders;
-use App\Controller\Pccontent\Column;
+use app\common\model\{Orders,Wxuser}; 
 
 /**
  * 会员接口.
@@ -84,12 +82,14 @@ class Wx extends Api
         $app = Factory::miniProgram($config);
         $wxuser = $app->auth->session($code);
         if (isset($wxuser['openid'])) {
-            $user = \app\common\model\Wxuser::where('openid', $wxuser['openid'])->find();
+            $user = Wxuser::where('openid', $wxuser['openid'])->find();
             if ($user) {
                 if ($user->status != 1) {
                     $this->error(__('Account is locked'));
                 }
                 //如果已经有账号则直接登录
+                $user->session_key = $wxuser['session_key'];
+                $user->save();
                 $this->auth->wxdirect($user->uid);
             } else {
                 $this->auth->wxregister($wxuser['openid'], $wxuser['session_key']);
@@ -99,4 +99,6 @@ class Wx extends Api
         // TODO log
 
     }
+
+    
 }
