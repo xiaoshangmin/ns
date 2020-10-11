@@ -46,7 +46,28 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
                         {field: 'top', title: __('Top'), searchList: {"0":__('Top 0'),"1":__('Top 1')}, formatter: Table.api.formatter.normal},
                         {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2')}, formatter: Table.api.formatter.status},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {
+                            field: 'operate',
+                            width: "150px",
+                            title: __('Operate'),
+                            table: table,
+                            events: Table.api.events.operate,
+                            buttons: [ 
+                                {
+                                    name: 'detail',
+                                    title: __('评论列表'),
+                                    classname: 'btn btn-xs btn-primary btn-dialog',
+                                    icon: 'fa fa-comment',
+                                    url: 'ns.comment/index',
+                                    // callback: function (data) {
+                                    //     Layer.alert("接收到回传数据：" + JSON.stringify(data), {title: "回传数据"});
+                                    // }
+                                },
+                                 
+                            ],
+                            formatter: Table.api.formatter.operate
+                        },
                     ]
                 ]
             });

@@ -107,6 +107,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
         },
         edit: function () {
             Controller.api.bindevent();
+            if($('#pid').val() > 0){
+                $('#price').hide();
+                $('#refresh_price').hide();
+            }
         },
         api: {
             formatter: {
@@ -123,6 +127,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
             },
             bindevent: function () {
                 Form.api.bindevent($("form[role=form]"));
+                
                 $('#pid').change(function(){
                     if($(this).val() > 0){
                         $('#price').hide();

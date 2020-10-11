@@ -19,21 +19,6 @@ class Comment extends BaseModel
 
 
 
-    public function getById(int $id): array
-    {
-        $detail = $this->field([
-            'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'create_time'
-        ])->where('id', $id)->where('status', 1)->find();
-        if ($detail) {
-            $detail = $detail->toArray();
-            $detail = $this->formatValue($detail);
-            $user = (new Wxuser())->getUserByUid($detail['uid']);
-            $detail['user'] = $user;
-            return $detail;
-        }
-        return [];
-    }
 
 
     /**
@@ -48,13 +33,13 @@ class Comment extends BaseModel
      */
     public function getList(array $condition, int $page, int $pageSize)
     {
-        $where = [['pid', '=', 0]];
+        $where = [['pid', '=', 0], ['delete_time', '=', '0']];
         if (isset($condition['cid']) && !empty($condition['cid'])) {
             $where[] = ['cid', '=', intval($condition['cid'])];
         }
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
-            'id', 'uid','content', 'create_time'
+            'id', 'uid', 'content', 'create_time'
         ])->where($where)->order('update_time', 'desc')->limit($offset, $pageSize)
             ->select()->toArray();
         $uids = $ids = [];
@@ -75,7 +60,7 @@ class Comment extends BaseModel
         }
         unset($list);
         $pids = join(',', $ids);
-        $newlist = array_column($lists,null,'id');
+        $newlist = array_column($lists, null, 'id');
         $childList = $this->getChildList(['pid' => $pids], 1, 20);
         foreach ($childList as $child) {
             if (isset($newlist[$child['pid']])) {
@@ -94,7 +79,7 @@ class Comment extends BaseModel
      */
     public function getChildList(array $condition, int $page, int $pageSize): array
     {
-        $where = [];
+        $where = ['delete_time', '=', '0'];
         if (isset($condition['pid']) && !empty($condition['pid'])) {
             $where[] = ['pid', 'IN', $condition['pid']];
         } else {
