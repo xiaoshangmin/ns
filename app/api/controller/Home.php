@@ -3,9 +3,7 @@
 namespace app\api\controller;
 
 use app\common\controller\Api;
-use app\common\model\Ads;
-use app\common\model\Navigation;
-use app\common\model\Columns;
+use app\common\model\{Ads, Navigation, Columns, Notice};
 
 /**
  * 首页接口.
@@ -33,14 +31,7 @@ class Home extends Api
         $data['banner'] = (new Ads())->getBannerList();
         $data['popup'] = (new Ads())->getPopupList();
         $data['navigation'] = (new Navigation())->getNavList();
-        $data['notice'] = [
-            [
-                'id' => 1, 'title' => '发布须知！',
-            ],
-            [
-                'id' => 2, 'title' => '关于我们',
-            ]
-        ];
+        $data['notice'] = (new Notice())->getList(['status' => 1, 'type' => '1']);;
         //一级栏目
         $columns = new Columns();
         $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
@@ -58,6 +49,4 @@ class Home extends Api
         $data['columns'] = $column;
         $this->success('ok', $data);
     }
-
-    
 }
