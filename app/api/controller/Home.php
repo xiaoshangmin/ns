@@ -31,7 +31,7 @@ class Home extends Api
         $data['banner'] = (new Ads())->getBannerList();
         $data['popup'] = (new Ads())->getPopupList();
         $data['navigation'] = (new Navigation())->getNavList();
-        $data['notice'] = (new Notice())->getList(['status' => 1, 'type' => '1']);;
+        $data['notice'] = (new Notice())->getList(['status' => 1, 'type' => 1],1,10);
         //一级栏目
         $columns = new Columns();
         $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);

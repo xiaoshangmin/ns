@@ -5,7 +5,7 @@ namespace app\api\controller\Misc;
 use app\common\controller\Api;
 
 /**
- * 会员接口.
+ * 置顶配置数据
  */
 class Top extends Api
 {
@@ -24,7 +24,6 @@ class Top extends Api
     public function config()
     {
         $list = $this->model->getList();
-        // print_r($this->model);
         $this->success('ok',$list);
     }
 }
