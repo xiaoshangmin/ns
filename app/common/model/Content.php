@@ -95,7 +95,7 @@ class Content extends BaseModel
             }
             $lists = $this->getByCids($cids, $uid);
         } else {
-            $topList = $this->getTopList($uid, $condition, $page, $pageSize);
+            $topList = $this->getTopList( $condition, $page, $pageSize);
             $diff = $pageSize - count($topList);
             $lists = [];
             if ($diff > 0) {
@@ -110,7 +110,7 @@ class Content extends BaseModel
                 if (isset($condition['keyword']) && !empty($condition['keyword'])) {
                     $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
                 }
-                $list = $this->getList($uid, $where,  ['update_time' => 'desc'], $page, $diff);
+                $list = $this->getList($where,  ['update_time' => 'desc'], $page, $diff);
             }
             $lists = array_merge($topList, $list);
         }
@@ -141,7 +141,7 @@ class Content extends BaseModel
         if (isset($condition['geohash']) && !empty($condition['geohash'])) {
             $where['geohash'] = ['geohash', 'like', "{$condition['geohash']}%"];
         }
-        $lists = $this->getList($uid, $where,  ['update_time' => 'desc'], $page, $pageSize);
+        $lists = $this->getList($where,  ['update_time' => 'desc'], $page, $pageSize);
         $lists = $this->formatMultiValue($lists, $uid);
         //移除置顶标签
         foreach($lists as &$list){
@@ -178,7 +178,7 @@ class Content extends BaseModel
         return $lists;
     }
 
-    public function getByCids(array $cids, int $uid): array
+    public function getByCids(array $cids): array
     {
         if (empty($cids)) {
             return [];
@@ -210,7 +210,7 @@ class Content extends BaseModel
      * @author xsm
      * @since 2020-10-24
      */
-    public function getTopList(int $uid, array $condition, int $page, int $pageSize): array
+    public function getTopList(array $condition, int $page, int $pageSize): array
     {
         $where = [
             'pay_status' => 1,
@@ -224,11 +224,18 @@ class Content extends BaseModel
         if (isset($condition['keyword']) && !empty($condition['keyword'])) {
             $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
         }
-        $list = $this->getList($uid, $where, ['update_time' => 'desc'], $page, $pageSize);
+        $list = $this->getList($where, ['update_time' => 'desc'], $page, $pageSize);
         return $list;
     }
 
-    public function getList(int $uid, array $condition, array $order, int $page, int $pageSize): array
+    public function getMyPost(int $uid, array $condition, array $order, int $page, int $pageSize): array
+    {
+       $lists = $this->getList($condition,$order,$page,$pageSize);
+       $lists = $this->formatMultiValue($lists, $uid);
+       return $lists;
+    }
+
+    public function getList(array $condition, array $order, int $page, int $pageSize): array
     {
         $where = [];
         if (isset($condition['uid']) && !empty($condition['uid'])) {
