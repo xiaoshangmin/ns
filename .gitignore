@@ -1,6 +1,7 @@
 /.idea
 /.vscode
 /vendor
+/addons
 *.log
 runtime
 .env

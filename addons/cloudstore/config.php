@@ -23,7 +23,7 @@ return [
         'title' => '云存储域名',
         'type' => 'string',
         'content' => '',
-        'value' => 'http://qgj8s2d2j.hn-bkt.clouddn.com',
+        'value' => 'http://cdn.nsbuluo.com',
         'rule' => 'required',
         'msg' => '',
         'tip' => '',

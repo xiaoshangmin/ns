@@ -114,7 +114,7 @@ class Content extends BaseModel
             }
             $lists = array_merge($topList, $list);
         }
-
+        $lists = $this->formatMultiValue($lists, $uid);
         return $lists;
     }
 
@@ -142,6 +142,7 @@ class Content extends BaseModel
             $where['geohash'] = ['geohash', 'like', "{$condition['geohash']}%"];
         }
         $lists = $this->getList($uid, $where,  ['update_time' => 'desc'], $page, $pageSize);
+        $lists = $this->formatMultiValue($lists, $uid);
         //移除置顶标签
         foreach($lists as &$list){
             if(isset($list['tags'][0]) && $list['tags'][0] == '置顶'){
@@ -152,10 +153,22 @@ class Content extends BaseModel
     }
 
 
+    /**
+     * 搜索
+     *
+     * @param integer $uid
+     * @param integer $columnId
+     * @param string $keyword
+     * @param integer $page
+     * @param integer $pageSize
+     * @return void
+     * @author xsm
+     * @since 2020-10-24
+     */
     public function getListByFullIndex(int $uid,int $columnId, string $keyword, int $page, int $pageSize)
     {
         $offset = ($page - 1) * $pageSize;
-        $limit = "{$offset},{$pageSize}";
+        // $limit = "{$offset},{$pageSize}";
     //     $sql = "SELECT id FROM ns_content WHERE FIND_IN_SET({$columnId},column_ids) AND
     //                 MATCH (content)
     // AGAINST ('{$keyword}') LIMIT {$limit}";
@@ -181,11 +194,22 @@ class Content extends BaseModel
         if (empty($lists)) {
             return [];
         }
-        $lists = $this->formatMultiValue($lists, $uid);
+        // $lists = $this->formatMultiValue($lists, $uid);
 
         return $lists;
     }
 
+    /**
+     * 获取置顶数据
+     *
+     * @param integer $uid
+     * @param array $condition
+     * @param integer $page
+     * @param integer $pageSize
+     * @return array
+     * @author xsm
+     * @since 2020-10-24
+     */
     public function getTopList(int $uid, array $condition, int $page, int $pageSize): array
     {
         $where = [
@@ -240,12 +264,21 @@ class Content extends BaseModel
         if (empty($lists)) {
             return [];
         }
-        $lists = $this->formatMultiValue($lists, $uid);
+        // $lists = $this->formatMultiValue($lists, $uid);
 
         return $lists;
     }
 
 
+    /**
+     * 格式化数据
+     *
+     * @param array $lists
+     * @param integer $uid
+     * @return array
+     * @author xsm
+     * @since 2020-10-24
+     */
     public function formatMultiValue(array $lists, int $uid): array
     {
         $config = get_addon_config('cloudstore');
