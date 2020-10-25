@@ -54,4 +54,21 @@ class User extends Api
         }
         $this->success();
     }
+
+    public function phoneNumber()
+    {
+        $iv = $this->request->post('iv');
+        $encryptedData = $this->request->post('encryptedData');
+        $user = (new Wxuser())->where('uid', $this->auth->uid)->find();
+        if (isset($user['session_key'])) {
+            $config = Config::get('api.miniprogram.ns');
+            $app = Factory::miniProgram($config);
+            $decryptedData = $app->encryptor->decryptData($user['session_key'], $iv, $encryptedData);
+            if (isset($decryptedData['purePhoneNumber'])) {
+                Wxuser::update(['mobile' => $decryptedData['purePhoneNumber']], ['uid' => $user['uid']]);
+                $this->success('ok', ['mobile' => $decryptedData['purePhoneNumber']]);
+            }
+        }
+        $this->error();
+    }
 }
