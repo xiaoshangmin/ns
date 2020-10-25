@@ -187,9 +187,9 @@ class Feed extends Api
         $config = Config::get('api.miniprogram.ns');
         $app = Factory::payment($config);
         $totalFee = bcmul($data['total_fee'], 100);
-        if ($data['openid'] == 'otthZ5JkDfCuIBojzSAaB1c30cYc') {
-            $totalFee = 1;
-        }
+        // if ($data['openid'] == 'otthZ5JkDfCuIBojzSAaB1c30cYc') {
+        //     $totalFee = 1;
+        // }
         $result = $app->order->unify([
             'body' => '南沙小程序-发布内容',
             'out_trade_no' => $data['out_trade_no'],
