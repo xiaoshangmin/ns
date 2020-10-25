@@ -3,6 +3,7 @@
 namespace app\api\controller\Misc;
 
 use app\common\controller\Api;
+use app\common\model\Wxuser;
 
 /**
  * 置顶配置数据
@@ -24,6 +25,7 @@ class Top extends Api
     public function config()
     {
         $list = $this->model->getList();
-        $this->success('ok',$list);
+        $user = (new Wxuser())->field('mobile')->where('uid', $this->auth->uid)->find();
+        $this->success('ok',['top'=>$list,'user'=>$user]);
     }
 }
