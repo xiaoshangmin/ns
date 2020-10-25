@@ -121,13 +121,13 @@ class Feed extends Api
             $orderAmount = 0;
             //获取栏目 
             $cloumns = explode(',', $params['column_ids']);
-            foreach ($cloumns as $cloumnId) {
-                $columnInfo = Columns::find($cloumnId);
+            // foreach ($cloumns as $cloumnId) {
+                $columnInfo = Columns::find($cloumns[0]);
                 if (empty($columnInfo)) {
                     $this->error('栏目不存在或已下架');
                 }
                 $orderAmount = bcadd($orderAmount, $columnInfo['price']);
-            }
+            // }
             unset($cloumnId);
             $geohash = new Geohash();
             $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
