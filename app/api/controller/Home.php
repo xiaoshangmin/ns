@@ -31,7 +31,7 @@ class Home extends Api
         $data['banner'] = (new Ads())->getBannerList();
         $data['popup'] = (new Ads())->getPopupList();
         $data['navigation'] = (new Navigation())->getNavList();
-        $data['notice'] = (new Notice())->getList(['status' => 1, 'type' => 1],1,10);
+        $data['notice'] = (new Notice())->getList(['status' => 1, 'type' => 1], 1, 10);
         //一级栏目
         $columns = new Columns();
         $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
@@ -42,6 +42,8 @@ class Home extends Api
         //     $child = $columns->getList(['status' => 1, 'pid' => $val['id']]);
         //     $column = array_merge($column, $child);
         // }
+        $first = ['id' => 0, 'name' => '全部'];
+        array_unshift($column,$first);
         $column = [
             'name' => '全部',
             'child' => $column,
