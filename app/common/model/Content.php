@@ -48,7 +48,7 @@ class Content extends BaseModel
     public function getById(int $id, int $uid): array
     {
         $detail = $this->field([
-            'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
+            'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
             'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time'
         ])->where('id', $id)->where('status', 1)->find();
         if ($detail) {
@@ -264,7 +264,7 @@ class Content extends BaseModel
         }
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
-            'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
+            'id', 'uid', 'content', 'pictures', 'like_count','contacts', 'mobile', 'share_count', 'comment_count',
             'view_count', 'address', 'lng', 'lat', 'create_time', 'top', 'expiry_time'
         ])->where($where)->order($order)->limit($offset, $pageSize)
             ->select()->toArray();
