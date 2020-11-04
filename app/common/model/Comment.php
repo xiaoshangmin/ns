@@ -18,6 +18,41 @@ class Comment extends BaseModel
 
 
 
+    /**
+     * 回复我的评论
+     *
+     * @param integer $uid
+     * @param integer $page
+     * @param integer $pageSize
+     * @return void
+     * @author xsm
+     * @since 2020-11-05
+     */
+    public function replayMe(int $uid,int $page,int $pageSize)
+    {
+        $where = [['to_uid', '=', $uid], ['delete_time', '=', '0']];
+        $offset = ($page - 1) * $pageSize;
+        $lists = $this->field([
+            'id', 'uid', 'content', 'create_time'
+        ])->where($where)->order('update_time', 'desc')->limit($offset, $pageSize)
+            ->select()->toArray();
+        $uids = [];
+        foreach ($lists as &$list) {
+            $list = $this->formatValue($list);
+            $uids[] = $list['uid'];
+        }
+        unset($list);
+        $uids = array_unique($uids);
+        $users = (new Wxuser())->getUserByUids($uids);
+        $users = array_column($users, null, 'uid');
+        foreach ($lists as &$list) {
+            $list['user'] = [];
+            if (isset($users[$list['uid']])) {
+                $list['user'] = $users[$list['uid']];
+            }
+        } 
+        return $lists;
+    }
 
 
 

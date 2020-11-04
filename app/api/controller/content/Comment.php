@@ -5,6 +5,7 @@ namespace app\api\controller\Content;
 use app\common\controller\Api;
 use think\exception\ValidateException;
 use app\common\model\Comment as CommentModel;
+use app\common\model\Content;
 
 /**
  * 首页接口.
@@ -45,6 +46,13 @@ class Comment extends Api
         $this->success('ok', $detail);
     }
 
+    /**
+     * 提交评论|回复评论
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-11-04
+     */
     public function submit()
     {
         $params = $this->request->post();
@@ -54,7 +62,12 @@ class Comment extends Api
             } catch (ValidateException $e) {
                 $this->error($e->getMessage());
             }
+            $content = (new Content())->getBaseById($params['cid']);
+            if (empty($content)) {
+                $this->error('评论的内容不存在');
+            }
             $params['uid'] = $this->auth->uid;
+            $params['to_uid'] = $content['uid'];
             $result = $this->model->save($params);
             if ($result === false) {
                 $this->error($this->model->getError());
@@ -65,5 +78,19 @@ class Comment extends Api
         $this->error();
     }
 
-  
+
+    /**
+     * 回复我的
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-11-04
+     */
+    public function notifications()
+    {
+        $page = $this->request->post('p/d') ?: 1;
+        $pageSize = $this->request->post('ps/d') ?: 10;
+        $list = $this->model->replayMe($this->auth->uid, $page, $pageSize);
+        $this->success('ok', $list);
+    }
 }

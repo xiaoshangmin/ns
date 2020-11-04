@@ -45,14 +45,22 @@ class Content extends BaseModel
         return json_decode($value, true);
     }
 
-    public function getById(int $id, int $uid): array
+    public function getBaseById(int $cid): array
     {
         $detail = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
             'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time'
-        ])->where('id', $id)->where('status', 1)->find();
+        ])->where('id', $cid)->where('status', 1)->find();
+        if (empty($detail)) {
+            return [];
+        }
+        return $detail->toArray();
+    }
+
+    public function getById(int $cid, int $uid): array
+    {
+        $detail = $this->getBaseById($cid);
         if ($detail) {
-            $detail = $detail->toArray();
             $detail = $this->formatMultiValue([$detail], $uid);
             return current($detail);
         }
@@ -95,7 +103,7 @@ class Content extends BaseModel
             }
             $lists = $this->getByCids($cids, $uid);
         } else {
-            $topList = $this->getTopList( $condition, $page, $pageSize);
+            $topList = $this->getTopList($condition, $page, $pageSize);
             $diff = $pageSize - count($topList);
             $lists = [];
             if ($diff > 0) {
@@ -144,8 +152,8 @@ class Content extends BaseModel
         $lists = $this->getList($where,  ['update_time' => 'desc'], $page, $pageSize);
         $lists = $this->formatMultiValue($lists, $uid);
         //移除置顶标签
-        foreach($lists as &$list){
-            if(isset($list['tags'][0]) && $list['tags'][0] == '置顶'){
+        foreach ($lists as &$list) {
+            if (isset($list['tags'][0]) && $list['tags'][0] == '置顶') {
                 array_shift($list['tags']);
             }
         }
@@ -165,14 +173,14 @@ class Content extends BaseModel
      * @author xsm
      * @since 2020-10-24
      */
-    public function getListByFullIndex(int $uid,int $columnId, string $keyword, int $page, int $pageSize)
+    public function getListByFullIndex(int $uid, int $columnId, string $keyword, int $page, int $pageSize)
     {
         $offset = ($page - 1) * $pageSize;
         // $limit = "{$offset},{$pageSize}";
-    //     $sql = "SELECT id FROM ns_content WHERE FIND_IN_SET({$columnId},column_ids) AND
-    //                 MATCH (content)
-    // AGAINST ('{$keyword}') LIMIT {$limit}";
-    // echo $sql;exit();
+        //     $sql = "SELECT id FROM ns_content WHERE FIND_IN_SET({$columnId},column_ids) AND
+        //                 MATCH (content)
+        // AGAINST ('{$keyword}') LIMIT {$limit}";
+        // echo $sql;exit();
         $lists = $this->whereRaw("FIND_IN_SET({$columnId},column_ids) AND pay_status=1 AND status=1 AND MATCH (content) AGAINST ('{$keyword}')")->select()->toArray();
         $lists = (new Content())->formatMultiValue($lists, $uid);
         return $lists;
@@ -230,9 +238,9 @@ class Content extends BaseModel
 
     public function getMyPost(int $uid, array $condition, array $order, int $page, int $pageSize): array
     {
-       $lists = $this->getList($condition,$order,$page,$pageSize);
-       $lists = $this->formatMultiValue($lists, $uid);
-       return $lists;
+        $lists = $this->getList($condition, $order, $page, $pageSize);
+        $lists = $this->formatMultiValue($lists, $uid);
+        return $lists;
     }
 
     public function getList(array $condition, array $order, int $page, int $pageSize): array
@@ -264,7 +272,7 @@ class Content extends BaseModel
         }
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
-            'id', 'uid', 'content', 'pictures', 'like_count','contacts', 'mobile', 'share_count', 'comment_count',
+            'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
             'view_count', 'address', 'lng', 'lat', 'create_time', 'top', 'expiry_time'
         ])->where($where)->order($order)->limit($offset, $pageSize)
             ->select()->toArray();
