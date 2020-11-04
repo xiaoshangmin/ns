@@ -33,7 +33,7 @@ class Comment extends BaseModel
         $where = [['to_uid', '=', $uid], ['delete_time', '=', '0']];
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
-            'id', 'uid', 'content', 'create_time'
+            'id', 'cid', 'uid', 'content', 'create_time'
         ])->where($where)->order('update_time', 'desc')->limit($offset, $pageSize)
             ->select()->toArray();
         $uids = [];
