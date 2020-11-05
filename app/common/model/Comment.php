@@ -28,7 +28,7 @@ class Comment extends BaseModel
      * @author xsm
      * @since 2020-11-05
      */
-    public function replayMe(int $uid,int $page,int $pageSize)
+    public function replayMe(int $uid, int $page, int $pageSize)
     {
         $where = [['to_uid', '=', $uid], ['delete_time', '=', '0']];
         $offset = ($page - 1) * $pageSize;
@@ -50,11 +50,25 @@ class Comment extends BaseModel
             if (isset($users[$list['uid']])) {
                 $list['user'] = $users[$list['uid']];
             }
-        } 
+        }
         return $lists;
     }
 
 
+    public function getUnreadCommentNum(int $uid): string
+    {
+        if (!$uid) {
+            return '';
+        }
+        $wxuser = Wxuser::where('uid', $uid)->field('last_read_comment_time')->find();
+        $count = $this->where(
+            [['create_time', '>', $wxuser['last_read_comment_time']], ['to_uid','=', $uid]]
+        )->count();
+        if ($count) {
+            return (string)$count;
+        }
+        return "";
+    }
 
     /**
      * 一级评论列表

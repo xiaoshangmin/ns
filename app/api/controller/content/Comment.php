@@ -5,7 +5,7 @@ namespace app\api\controller\Content;
 use app\common\controller\Api;
 use think\exception\ValidateException;
 use app\common\model\Comment as CommentModel;
-use app\common\model\Content;
+use app\common\model\{Content, Wxuser};
 
 /**
  * 首页接口.
@@ -91,6 +91,7 @@ class Comment extends Api
         $page = $this->request->post('p/d') ?: 1;
         $pageSize = $this->request->post('ps/d') ?: 10;
         $list = $this->model->replayMe($this->auth->uid, $page, $pageSize);
+        Wxuser::where('uid', $this->auth->uid)->update(['last_read_comment_time' => time()]);
         $this->success('ok', $list);
     }
 }

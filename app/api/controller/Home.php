@@ -3,15 +3,15 @@
 namespace app\api\controller;
 
 use app\common\controller\Api;
-use app\common\model\{Ads, Navigation, Columns, Notice};
+use app\common\model\{Ads, Navigation, Columns, Notice, Comment};
 
 /**
  * 首页接口.
  */
 class Home extends Api
 {
-    protected $noNeedLogin = '*';
-    protected $noNeedRight = '*';
+    protected $noNeedLogin = [];
+    protected $noNeedRight = [];
 
     public function _initialize()
     {
@@ -28,27 +28,8 @@ class Home extends Api
     public function index()
     {
         // $params = $this->request->post();
-        $data['banner'] = (new Ads())->getBannerList();
-        $data['popup'] = (new Ads())->getPopupList();
-        $data['navigation'] = (new Navigation())->getNavList();
-        $data['notice'] = (new Notice())->getList(['status' => 1, 'type' => 1], 1, 10);
-        //一级栏目
-        $columns = new Columns();
-        $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
-        $data['pcolumn'] = $pcloumn;
-        //多级栏目
-        $column = $pcloumn;
-        // foreach ($pcloumn as &$val) {
-        //     $child = $columns->getList(['status' => 1, 'pid' => $val['id']]);
-        //     $column = array_merge($column, $child);
-        // }
-        $first = ['id' => 0, 'name' => '全部'];
-        array_unshift($column,$first);
-        $column = [
-            'name' => '全部',
-            'child' => $column,
-        ];
-        $data['columns'] = $column;
+        $unread = (new Comment())->getUnreadCommentNum($this->auth->uid);
+        $data['common'] = ['unread' => $unread];
         $this->success('ok', $data);
     }
 }
