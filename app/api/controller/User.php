@@ -30,6 +30,13 @@ class User extends Api
         $this->success('ok', ['list' => $list]);
     }
 
+    /**
+     * 小程序getUserinfo
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-11-17
+     */
     public function decrypt()
     {
         $iv = $this->request->post('iv');
@@ -55,6 +62,13 @@ class User extends Api
         $this->success();
     }
 
+    /**
+     * 小程序获取手机号
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-11-17
+     */
     public function phoneNumber()
     {
         $iv = $this->request->post('iv');

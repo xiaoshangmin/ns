@@ -3,13 +3,13 @@
 namespace app\admin\model\ns;
 
 use app\common\model\BaseModel;
-
+use think\model\concern\SoftDelete;
 
 class Wxuser extends BaseModel
 {
 
     
-
+    use SoftDelete;
     protected $pk = 'uid';
 
     // 表名
@@ -21,7 +21,8 @@ class Wxuser extends BaseModel
     // 定义时间戳字段名
     protected $createTime = false;
     protected $updateTime = false;
-    protected $deleteTime = false;
+    protected $deleteTime = 'delete_time';
+    protected $defaultSoftDelete = 0;
 
     // 追加属性
     protected $append = [
@@ -83,5 +84,15 @@ class Wxuser extends BaseModel
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 
+    public function getDeleteTimeTextAttr($value, $data)
+    {
+        $value = $value ? $value : (isset($data['delete_time']) ? $data['delete_time'] : '');
+        return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
+    }
+    
+    protected function setDeleteTimeAttr($value)
+    {
+        return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
+    }
 
 }

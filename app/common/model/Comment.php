@@ -30,7 +30,7 @@ class Comment extends BaseModel
      */
     public function replayMe(int $uid, int $page, int $pageSize)
     {
-        $where = [['to_uid', '=', $uid], ['delete_time', '=', '0']];
+        $where = [['to_uid', '=', $uid], ['delete_time', '=', '0'],['is_online','=',1]];
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
             'id', 'cid', 'uid', 'content', 'create_time'
@@ -82,7 +82,7 @@ class Comment extends BaseModel
      */
     public function getList(array $condition, int $page, int $pageSize)
     {
-        $where = [['pid', '=', 0], ['delete_time', '=', '0']];
+        $where = [['pid', '=', 0], ['delete_time', '=', '0'],['is_online','=',1]];
         if (isset($condition['cid']) && !empty($condition['cid'])) {
             $where[] = ['cid', '=', intval($condition['cid'])];
         }
@@ -128,7 +128,7 @@ class Comment extends BaseModel
      */
     public function getChildList(array $condition, int $page, int $pageSize): array
     {
-        $where = [['delete_time', '=', '0']];
+        $where = [['delete_time', '=', '0'],['is_online','=',1]];
         if (isset($condition['pid']) && !empty($condition['pid'])) {
             $where[] = ['pid', 'IN', $condition['pid']];
         } else {

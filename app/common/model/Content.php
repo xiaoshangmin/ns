@@ -111,10 +111,8 @@ class Content extends BaseModel
                     'pay_status' => 1,
                     'expiry_time' => ['expiry_time', '<', time()],
                     'status' => 1,
+                    'is_online' => 1,
                 ];
-                if (isset($condition['type']) && !empty($condition['type'])) {
-                    $where['type'] = intval($condition['type']);
-                }
                 if (isset($condition['keyword']) && !empty($condition['keyword'])) {
                     $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
                 }
@@ -142,10 +140,8 @@ class Content extends BaseModel
         $where = [
             'pay_status' => 1,
             'status' => 1,
+            'is_online' => 1,
         ];
-        if (isset($condition['type']) && !empty($condition['type'])) {
-            $where['type'] = intval($condition['type']);
-        }
         if (isset($condition['geohash']) && !empty($condition['geohash'])) {
             $where['geohash'] = ['geohash', 'like', "{$condition['geohash']}%"];
         }
@@ -181,7 +177,12 @@ class Content extends BaseModel
         //                 MATCH (content)
         // AGAINST ('{$keyword}') LIMIT {$limit}";
         // echo $sql;exit();
-        $lists = $this->whereRaw("FIND_IN_SET({$columnId},column_ids) AND pay_status=1 AND status=1 AND MATCH (content) AGAINST ('{$keyword}')")->select()->toArray();
+        $whereArr = ['pay_status=1',"MATCH (content) AGAINST ('{$keyword}')"];
+        if($columnId){
+            $whereArr[] = "FIND_IN_SET({$columnId},column_ids)";
+        }
+        $whereRaw = join(' AND ',$whereArr);
+        $lists = $this->whereRaw($whereRaw)->select()->toArray();
         $lists = (new Content())->formatMultiValue($lists, $uid);
         return $lists;
     }
@@ -193,7 +194,7 @@ class Content extends BaseModel
         }
         $cids = join(',', $cids);
         $lists = $this->field([
-            'id', 'uid', 'content', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
+            'id', 'uid', 'content', 'contacts', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
             'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time'
         ])->where('id', 'in', $cids)
             ->order('top', 'desc')
@@ -201,9 +202,7 @@ class Content extends BaseModel
             ->select()->toArray();
         if (empty($lists)) {
             return [];
-        }
-        // $lists = $this->formatMultiValue($lists, $uid);
-
+        } 
         return $lists;
     }
 
@@ -225,10 +224,8 @@ class Content extends BaseModel
             'top' => 1,
             'expiry_time' => ['expiry_time', '>', time()],
             'status' => 1,
-        ];
-        if (isset($condition['type']) && !empty($condition['type'])) {
-            $where['type'] = intval($condition['type']);
-        }
+            'is_online' => 1,
+        ]; 
         if (isset($condition['keyword']) && !empty($condition['keyword'])) {
             $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
         }
@@ -257,10 +254,10 @@ class Content extends BaseModel
         }
         if (isset($condition['top']) && is_numeric($condition['top'])) {
             $where[] = ['top', '=', intval($condition['top'])];
-        }
-        if (isset($condition['type']) && !empty($condition['type'])) {
-            $where[] = ['type', '=', intval($condition['type'])];
-        }
+        } 
+        if (isset($condition['is_online']) && is_numeric($condition['is_online'])) {
+            $where[] = ['is_online', '=', intval($condition['is_online'])];
+        } 
         if (isset($condition['keyword'])) {
             $where[] = $condition['keyword'];
         }
@@ -278,9 +275,7 @@ class Content extends BaseModel
             ->select()->toArray();
         if (empty($lists)) {
             return [];
-        }
-        // $lists = $this->formatMultiValue($lists, $uid);
-
+        } 
         return $lists;
     }
 

@@ -3,7 +3,7 @@
 namespace app\admin\model\ns;
 
 use app\common\model\BaseModel;
-
+use think\model\concern\SoftDelete;
 
 class Comment extends BaseModel
 {
@@ -11,7 +11,7 @@ class Comment extends BaseModel
     
 
     
-
+    use SoftDelete;
     // 表名
     protected $name = 'comment';
     
@@ -19,15 +19,17 @@ class Comment extends BaseModel
     protected $autoWriteTimestamp = false;
 
     // 定义时间戳字段名
-    protected $createTime = false;
-    protected $updateTime = false;
-    protected $deleteTime = false;
+    protected $createTime = 'create_time';
+    protected $updateTime = 'update_time';
+    protected $deleteTime = 'delete_time';
+    protected $defaultSoftDelete = 0;
 
     // 追加属性
     protected $append = [
         'delete_time_text',
         'create_time_text',
-        'update_time_text'
+        'update_time_text',
+        'is_online_text',
     ];
     
 
@@ -57,18 +59,22 @@ class Comment extends BaseModel
 
     protected function setDeleteTimeAttr($value)
     {
-        return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
+        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 
     protected function setCreateTimeAttr($value)
     {
-        return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
+        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 
     protected function setUpdateTimeAttr($value)
     {
-        return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
+        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 
+    public function getIsOnlineList()
+    {
+        return ['0' => __('Is_online 0'), '1' => __('Is_online 1')];
+    }
 
 }

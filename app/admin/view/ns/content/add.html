@@ -128,6 +128,18 @@
         </div>
     </div>
     <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Is_online')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            
+            <div class="radio">
+            {foreach name="isOnlineList" item="vo"}
+            <label for="row[is_online]-{$key}"><input id="row[is_online]-{$key}" name="row[is_online]" type="radio" value="{$key}" {in name="key" value="1"}checked{/in} /> {$vo}</label> 
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Top')}:</label>
         <div class="col-xs-12 col-sm-8">
                         

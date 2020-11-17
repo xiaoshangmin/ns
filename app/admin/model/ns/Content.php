@@ -3,7 +3,7 @@
 namespace app\admin\model\ns;
 
 use app\common\model\BaseModel;
-
+use think\model\concern\SoftDelete;
 
 class Content extends BaseModel
 {
@@ -11,7 +11,7 @@ class Content extends BaseModel
 
 
 
-
+    use SoftDelete;
     // 表名
     protected $name = 'content';
 
@@ -21,7 +21,8 @@ class Content extends BaseModel
     // 定义时间戳字段名
     protected $createTime = 'create_time';
     protected $updateTime = 'update_time';
-    protected $deleteTime = false;
+    protected $deleteTime = 'delete_time';
+    protected $defaultSoftDelete = 0;
 
     // 追加属性
     protected $append = [
@@ -31,6 +32,7 @@ class Content extends BaseModel
         'status_text',
         'top_text',
         'pay_status_text',
+        'is_online_text',
         'pcolumn_id',
         'column_id'
     ];
@@ -96,6 +98,11 @@ class Content extends BaseModel
         return ['0' => __('Pay_status 0'), '1' => __('Pay_status 1'), '2' => __('Pay_status 2')];
     }
 
+    public function getIsOnlineList()
+    {
+        return ['0' => __('Is_online 0'), '1' => __('Is_online 1')];
+    }
+
 
     public function getCreateTimeTextAttr($value, $data)
     {
@@ -141,13 +148,31 @@ class Content extends BaseModel
         return isset($list[$value]) ? $list[$value] : '';
     }
 
+    public function getIsOnlineTextAttr($value, $data)
+    {
+        $value = $value ? $value : (isset($data['is_online']) ? $data['is_online'] : '');
+        $list = $this->getIsOnlineList();
+        return isset($list[$value]) ? $list[$value] : '';
+    }
+
     protected function setUpdateTimeAttr($value)
     {
-        return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
+        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 
     protected function setExpiryTimeAttr($value)
     {
-        return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
+        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
+    }
+
+    public function getDeleteTimeTextAttr($value, $data)
+    {
+        $value = $value ? $value : (isset($data['delete_time']) ? $data['delete_time'] : '');
+        return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
+    }
+    
+    protected function setDeleteTimeAttr($value)
+    {
+        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 }

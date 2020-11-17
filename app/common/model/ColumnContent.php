@@ -27,6 +27,7 @@ class ColumnContent extends BaseModel
                 ['pay_status', '=', 1],
                 ['expiry_time', '<', time()],
                 ['status', '=', 1],
+                ['is_online', '=', 1],
             ];
             if (isset($condition['column_id']) && !empty($condition['column_id'])) {
                 $where[] = ["column_id", '=', $condition['column_id']];
@@ -44,6 +45,7 @@ class ColumnContent extends BaseModel
             ['top', '=', 1],
             ['expiry_time', '>', time()],
             ['status', '=', 1],
+            ['is_online', '=', 1],
         ];
         if (isset($condition['column_id']) && !empty($condition['column_id'])) {
             $where[] = ["column_id", '=', $condition['column_id']];

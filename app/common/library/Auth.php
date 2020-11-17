@@ -32,6 +32,7 @@ class Auth
     protected $_user = null;
     protected $uid = 0;
     protected $_token = '';
+    protected $_block = false;
     //Token默认有效时长
     protected $keeptime = 604800;
     protected $requestUri = '';
@@ -39,7 +40,7 @@ class Auth
     //默认配置
     protected $config = [];
     protected $options = [];
-    protected $allowFields = ['id', 'openid', 'nickname', 'mobile', 'headimgurl'];
+    protected $allowFields = ['id', 'openid', 'nickname', 'mobile', 'headimgurl','status'];
 
     public function __construct($options = [])
     {
@@ -109,10 +110,11 @@ class Auth
 
                 return false;
             }
+            //被拉黑
             if ($user['status'] != 1) {
-                $this->setError('Account is locked');
-
-                return false;
+                // $this->setError('Account is locked');
+                $this->_block = true;
+                // return false;
             }
             $this->_user = $user;
             $this->_logined = true;
@@ -244,7 +246,7 @@ class Auth
     }
 
     /**
-     * 用户登录.
+     * 用户登录.xxxxxxxxxxxxxxxxx
      *
      * @param string $account  账号,用户名、邮箱、手机号
      * @param string $password 密码
@@ -481,6 +483,18 @@ class Auth
         }
 
         return false;
+    }
+
+    /**
+     * 是否拉黑
+     *
+     * @return boolean
+     * @author xsm
+     * @since 2020-11-17
+     */
+    public function isBlock()
+    {
+        return $this->_block;
     }
 
     /**

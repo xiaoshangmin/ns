@@ -29,7 +29,6 @@ class Feed extends Api
         $page = $this->request->post('p/d') ?: 1;
         $pageSize = $this->request->post('ps/d') ?: 10;
         $columnId = $this->request->post('columnId/d') ?: 0;
-        $type = $this->request->post('type/d') ?: 1;
         $keyword = $this->request->post('keyword/s');
         if ($keyword) {
             $list = $this->model->getListByFullIndex(
@@ -42,7 +41,7 @@ class Feed extends Api
         } else {
             $list = $this->model->getHomeList(
                 $this->auth->uid,
-                ['column_id' => $columnId, 'type' => $type, 'keyword' => $keyword],
+                ['column_id' => $columnId,'keyword' => $keyword],
                 $page,
                 $pageSize
             );
@@ -66,7 +65,7 @@ class Feed extends Api
         }
         $list = $this->model->getNearBy(
             $this->auth->uid,
-            ['type' => 1, 'geohash' => $geohash],
+            ['geohash' => $geohash],
             $page,
             $pageSize
         );
@@ -106,6 +105,10 @@ class Feed extends Api
 
     public function submit()
     {
+        if(true === $this->auth->isBlock())
+        {
+            $this->error('此账号已被封号');
+        }
         //加锁
         $params = $this->request->post();
         $log = 'submit:' . json_encode($params, JSON_UNESCAPED_UNICODE);

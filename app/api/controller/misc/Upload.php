@@ -10,7 +10,7 @@ use \think\facade\Filesystem;
  */
 class Upload extends Api
 {
-    protected $noNeedLogin = ['*'];
+    protected $noNeedLogin = [];
     protected $noNeedRight = '*';
 
     public function _initialize()

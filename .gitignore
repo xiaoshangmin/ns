@@ -7,3 +7,4 @@ runtime
 .env
 composer.lock
 config/install.lock
+public/.DS_Store

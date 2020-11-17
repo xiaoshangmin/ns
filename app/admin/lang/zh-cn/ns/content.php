@@ -25,5 +25,8 @@ return [
     'Pay_status'    => '支付状态',
     'Pay_status 0'  => '待支付',
     'Pay_status 1'  => '已支付',
-    'Pay_status 2'  => '支付失败'
+    'Pay_status 2'  => '支付失败',
+    'Is_online'    => '内容状态',
+    'Is_online 0'  => '下线',
+    'Is_online 1'  => '上线',
 ];

@@ -55,6 +55,10 @@ class Comment extends Api
      */
     public function submit()
     {
+        if(true === $this->auth->isBlock())
+        {
+            $this->error('此账号已被封号');
+        }
         $params = $this->request->post();
         if ($params) {
             try {
