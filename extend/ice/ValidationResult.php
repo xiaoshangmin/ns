@@ -1,6 +1,6 @@
 <?php
 
-namespace Ice;
+namespace ice;
 
 /**
  * Validation result.

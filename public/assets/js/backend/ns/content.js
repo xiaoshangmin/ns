@@ -86,7 +86,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     ]
                 ]
             });
-
+            
             // 为表格绑定事件
             Table.api.bindevent(table);
         },
@@ -98,6 +98,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
         },
         api: {
             bindevent: function () {
+                $("[data-toggle='addresspicker']").data("callback", function(res){
+                    //其中res则是包含了address/lat/lng等信息的JSON对象
+                    console.log(res)
+                   });
                 Form.api.bindevent($("form[role=form]"));
             }
         }

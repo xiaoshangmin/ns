@@ -1,6 +1,6 @@
 <?php
 
-namespace app\api\controller\Misc;
+namespace app\api\controller\misc;
 
 use app\common\controller\Api;
 use app\common\model\Wxuser;

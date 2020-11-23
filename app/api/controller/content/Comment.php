@@ -1,6 +1,6 @@
 <?php
 
-namespace app\api\controller\Content;
+namespace app\api\controller\content;
 
 use app\common\controller\Api;
 use think\exception\ValidateException;

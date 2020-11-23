@@ -34,7 +34,7 @@ class Content extends BaseModel
         'pay_status_text',
         'is_online_text',
         'pcolumn_id',
-        'column_id'
+        'column_id',
     ];
 
     public function getPcolumnIdAttr($value, $data)
@@ -70,7 +70,7 @@ class Content extends BaseModel
         return '';
     }
 
-    public function setPicturesAttr($value)
+    protected function setPicturesAttr($value)
     {
         $keys = [];
         if ($value) {
@@ -81,6 +81,24 @@ class Content extends BaseModel
             }
         }
         return json_encode($keys, JSON_UNESCAPED_UNICODE);
+    }
+
+    protected function setColumnIdsAttr($value,$data)
+    {
+        $columnIds = [];
+        $columnIds[] = $data['pcolumn_id'] ?? 0;
+        $columnIds[] = $data['column_id'] ?? 0;
+        return join(',',$columnIds);
+    }
+
+    public static function onBeforeWrite($content)
+    {
+        $columnIds[] = $content->pcolumn_id ?: 0;
+        $columnIds[] = $content->column_id ?: 0;
+        $columnIds = array_filter($columnIds);
+        $columnIds =  join(',',$columnIds);
+        $columnIds = rtrim($columnIds,',');
+        $content->column_ids = $columnIds;
     }
 
     public function getStatusList()

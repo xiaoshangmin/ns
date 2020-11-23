@@ -29,4 +29,5 @@ return [
     'Is_online'    => '内容状态',
     'Is_online 0'  => '下线',
     'Is_online 1'  => '上线',
+    'Private'  => '管理者可见',
 ];

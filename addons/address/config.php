@@ -10,7 +10,7 @@ return [
             'amap' => '高德地图',
             'tencent' => '腾讯地图',
         ],
-        'value' => 'baidu',
+        'value' => 'tencent',
         'rule' => 'required',
         'msg' => '',
         'tip' => '',
@@ -23,7 +23,7 @@ return [
         'type' => 'string',
         'content' => [
         ],
-        'value' => '北京',
+        'value' => '广州',
         'rule' => 'required',
         'msg' => '',
         'tip' => '',
@@ -49,7 +49,7 @@ return [
         'type' => 'string',
         'content' => [
         ],
-        'value' => '39.919990',
+        'value' => '22.76735',
         'rule' => 'required',
         'msg' => '',
         'tip' => '',
@@ -62,7 +62,7 @@ return [
         'type' => 'string',
         'content' => [
         ],
-        'value' => '116.456270',
+        'value' => '113.60877',
         'rule' => 'required',
         'msg' => '',
         'tip' => '',
@@ -101,7 +101,7 @@ return [
         'type' => 'string',
         'content' => [
         ],
-        'value' => '608d75903d29ad471362f8c58c550daf',
+        'value' => 'XH7BZ-QPAWW-BIBRB-ONTVU-OMGLJ-6DFZD',
         'rule' => 'required',
         'msg' => '',
         'tip' => '',

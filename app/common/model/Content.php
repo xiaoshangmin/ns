@@ -49,12 +49,14 @@ class Content extends BaseModel
     {
         $detail = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time'
+            'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time','extra'
         ])->where('id', $cid)->where('status', 1)->find();
         if (empty($detail)) {
             return [];
         }
-        return $detail->toArray();
+        $detail = $detail->toArray(); 
+        $detail['extra']= json_decode($detail['extra'],true);
+        return $detail;
     }
 
     public function getById(int $cid, int $uid): array

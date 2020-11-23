@@ -17,7 +17,7 @@ return [
         '/example/d2/[:name]' => 'example/demo/demo2',
         0 => [
             'addon' => 'cloudstore',
-            'domain' => 'http://qgj8s2d2j.hn-bkt.clouddn.com',
+            'domain' => 'http://cdn.nsbuluo.com',
             'rule' => [
             ],
         ],
