@@ -5,7 +5,7 @@ namespace app\api\controller\content;
 use app\common\controller\Api;
 use think\exception\ValidateException;
 use app\common\model\{Content, LikeLog, Orders, Columns, ColumnContent, TopConfig};
-use think\facade\{Config, Log, Cache};
+use think\facade\{Config, Log, Cache, Db};
 use EasyWeChat\Factory;
 use Geohash;
 
@@ -14,8 +14,8 @@ use Geohash;
  */
 class Feed extends Api
 {
-    protected $noNeedLogin = [];
-    protected $noNeedRight = [];
+    protected $noNeedLogin = ['lists'];
+    protected $noNeedRight = ['lists'];
     public $model = null;
 
     public function _initialize()
@@ -32,7 +32,7 @@ class Feed extends Api
         $keyword = $this->request->post('keyword/s');
         if ($keyword) {
             $list = $this->model->getListByFullIndex(
-                $this->auth->uid,
+                $this->auth->uid ?: 0,
                 $columnId,
                 $keyword,
                 $page,
@@ -40,8 +40,8 @@ class Feed extends Api
             );
         } else {
             $list = $this->model->getHomeList(
-                $this->auth->uid,
-                ['column_id' => $columnId,'keyword' => $keyword],
+                $this->auth->uid ?: 0,
+                ['column_id' => $columnId, 'keyword' => $keyword],
                 $page,
                 $pageSize
             );
@@ -105,8 +105,7 @@ class Feed extends Api
 
     public function submit()
     {
-        if(true === $this->auth->isBlock())
-        {
+        if (true === $this->auth->isBlock()) {
             $this->error('此账号已被封号');
         }
         //加锁
@@ -125,11 +124,11 @@ class Feed extends Api
             //获取栏目 
             $cloumns = explode(',', $params['column_ids']);
             // foreach ($cloumns as $cloumnId) {
-                $columnInfo = Columns::find($cloumns[0]);
-                if (empty($columnInfo)) {
-                    $this->error('栏目不存在或已下架');
-                }
-                $orderAmount = bcadd($orderAmount, $columnInfo['price']);
+            $columnInfo = Columns::find($cloumns[0]);
+            if (empty($columnInfo)) {
+                $this->error('栏目不存在或已下架');
+            }
+            $orderAmount = bcadd($orderAmount, $columnInfo['price']);
             // }
             unset($cloumnId);
             $geohash = new Geohash();
@@ -209,5 +208,39 @@ class Feed extends Api
             return $config;
         }
         return [];
+    }
+
+    /**
+     * 删除
+     */
+    public function del($ids = '')
+    {
+        if ($ids) {
+            $pk       = $this->model->getPk();
+            $where = [[$pk, 'in', $ids], ['uid','=', $this->auth->uid]];
+            $list = $this->model->where($where)->select();
+
+            $count = 0;
+            Db::startTrans();
+
+            try {
+                foreach ($list as $v) {
+                    $count += $v->delete();
+                }
+                Db::commit();
+            } catch (\PDOException $e) {
+                Db::rollback();
+                $this->error($e->getMessage());
+            } catch (\Exception $e) {
+                Db::rollback();
+                $this->error($e->getMessage());
+            }
+            if ($count) {
+                $this->success();
+            } else {
+                $this->error();
+            }
+        }
+        $this->error();
     }
 }

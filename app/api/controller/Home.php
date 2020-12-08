@@ -10,8 +10,8 @@ use app\common\model\{Ads, Navigation, Columns, Notice, Comment};
  */
 class Home extends Api
 {
-    protected $noNeedLogin = [];
-    protected $noNeedRight = [];
+    protected $noNeedLogin = ['*'];
+    protected $noNeedRight = ['*'];
 
     public function _initialize()
     {
@@ -28,7 +28,8 @@ class Home extends Api
     public function index()
     {
         // $params = $this->request->post();
-        $unread = (new Comment())->getUnreadCommentNum($this->auth->uid);
+        $uid = $this->auth->uid ? :0;
+        $unread = (new Comment())->getUnreadCommentNum($uid);
         $data['common'] = ['unread' => $unread];
         $this->success('ok', $data);
     }

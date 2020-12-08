@@ -47,7 +47,7 @@ class Column extends Backend
             $where['pid'] = $pid;
             $categorylist = Db::name('column')->where($where)->field('id as value,name')->order('id desc')->select();
         }
-        $this->success('', null, $categorylist);
+        $this->success('模板', null, $categorylist);
     }
 
     /**

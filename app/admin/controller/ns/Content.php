@@ -15,7 +15,7 @@ use think\exception\ValidateException;
  */
 class Content extends Backend
 {
-    
+
     /**
      * Content模型对象
      * @var \app\admin\model\ns\Content
@@ -32,14 +32,48 @@ class Content extends Backend
         $this->view->assign("payStatusList", $this->model->getPayStatusList());
         $this->view->assign("isOnlineList", $this->model->getIsOnlineList());
     }
-    
+
     /**
      * 默认生成的控制器所继承的父类中有index/add/edit/del/multi五个基础方法、destroy/restore/recyclebin三个回收站方法
      * 因此在当前控制器中可不用编写增删改查的代码,除非需要自己控制这部分逻辑
      * 需要将application/admin/library/traits/Backend.php中对应的方法复制到当前控制器,然后进行修改
      */
-    
-     /**
+
+
+    /**
+     * 查看
+     */
+    public function index()
+    {
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax()) {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField')) {
+                return $this->selectpage();
+            }
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
+            $total = $this->model
+                ->where($where)
+                ->order($sort, $order)
+                ->count();
+
+            $list = $this->model
+                ->where($where)
+                ->order($sort, $order)
+                ->limit($offset, $limit)
+                ->select();
+
+            $list   = $list->toArray();
+            $result = ['total' => $total, 'rows' => $list];
+
+            return json($result);
+        }
+
+        return $this->view->fetch();
+    }
+
+    /**
      * 添加
      */
     public function add()
@@ -59,7 +93,7 @@ class Content extends Backend
                     //是否采用模型验证
                     if ($this->modelValidate) {
                         $name     = str_replace('\\model\\', '\\validate\\', get_class($this->model));
-                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name.'.add' : $name) : $this->modelValidate;
+                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
                         validate($validate)->scene($this->modelSceneValidate ? 'edit' : $name)->check($params);
                     }
                     $result = $this->model->save($params);
@@ -144,17 +178,17 @@ class Content extends Backend
         return $this->view->fetch();
     }
 
-     public function refresh($ids = "")
-     {
+    public function refresh($ids = "")
+    {
         if ($ids) {
-            $pk = $this->model->getPk(); 
+            $pk = $this->model->getPk();
             $list = $this->model->where($pk, 'in', $ids)->select();
 
             $count = 0;
             Db::startTrans();
             try {
                 foreach ($list as $v) {
-                    $count += $v->save(['create_time'=>time(),'update_time'=>time()]);
+                    $count += $v->save(['create_time' => time(), 'update_time' => time()]);
                 }
                 Db::commit();
             } catch (PDOException $e) {
@@ -171,6 +205,5 @@ class Content extends Backend
             }
         }
         $this->error(__('Parameter %s can not be empty', 'ids'));
-     }
-
+    }
 }

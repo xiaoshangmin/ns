@@ -101,7 +101,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 $("[data-toggle='addresspicker']").data("callback", function(res){
                     //其中res则是包含了address/lat/lng等信息的JSON对象
                     console.log(res)
-                   });
+                });
+                $("[data-toggle='cxselect']").data("callback", function(res){
+                    //其中res则是包含了address/lat/lng等信息的JSON对象
+                    console.log(res)
+                });
+                
                 Form.api.bindevent($("form[role=form]"));
             }
         }

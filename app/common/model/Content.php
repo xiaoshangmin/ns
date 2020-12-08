@@ -173,7 +173,7 @@ class Content extends BaseModel
      */
     public function getListByFullIndex(int $uid, int $columnId, string $keyword, int $page, int $pageSize)
     {
-        $offset = ($page - 1) * $pageSize;
+        // $offset = ($page - 1) * $pageSize;
         // $limit = "{$offset},{$pageSize}";
         //     $sql = "SELECT id FROM ns_content WHERE FIND_IN_SET({$columnId},column_ids) AND
         //                 MATCH (content)
