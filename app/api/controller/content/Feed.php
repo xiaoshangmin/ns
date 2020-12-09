@@ -14,8 +14,8 @@ use Geohash;
  */
 class Feed extends Api
 {
-    protected $noNeedLogin = ['lists'];
-    protected $noNeedRight = ['lists'];
+    protected $noNeedLogin = ['lists','nearby'];
+    protected $noNeedRight = ['lists','nearby'];
     public $model = null;
 
     public function _initialize()
