@@ -14,8 +14,8 @@ use Geohash;
  */
 class Feed extends Api
 {
-    protected $noNeedLogin = ['lists','nearby'];
-    protected $noNeedRight = ['lists','nearby'];
+    protected $noNeedLogin = ['lists', 'nearby'];
+    protected $noNeedRight = ['lists', 'nearby'];
     public $model = null;
 
     public function _initialize()
@@ -64,7 +64,7 @@ class Feed extends Api
             $geohash = substr($geohash, 0, 5);
         }
         $list = $this->model->getNearBy(
-            $this->auth->uid,
+            $this->auth->uid ?: 0,
             ['geohash' => $geohash],
             $page,
             $pageSize
@@ -217,7 +217,7 @@ class Feed extends Api
     {
         if ($ids) {
             $pk       = $this->model->getPk();
-            $where = [[$pk, 'in', $ids], ['uid','=', $this->auth->uid]];
+            $where = [[$pk, 'in', $ids], ['uid', '=', $this->auth->uid]];
             $list = $this->model->where($where)->select();
 
             $count = 0;
