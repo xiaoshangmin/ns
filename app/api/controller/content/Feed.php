@@ -14,8 +14,8 @@ use Geohash;
  */
 class Feed extends Api
 {
-    protected $noNeedLogin = ['lists', 'nearby'];
-    protected $noNeedRight = ['lists', 'nearby'];
+    protected $noNeedLogin = ['lists', 'nearby','detail'];
+    protected $noNeedRight = ['lists', 'nearby','detail'];
     public $model = null;
 
     public function _initialize()
@@ -76,7 +76,7 @@ class Feed extends Api
     {
         //ALTER TABLE ns_content ADD FULLTEXT INDEX ft_index (content) WITH PARSER ngram;
         $cid = $this->request->get('cid/d');
-        $detail = $this->model->getById($cid, $this->auth->uid);
+        $detail = $this->model->getById($cid, $this->auth->uid?:0);
         $this->model->viewInc($cid);
         $this->success('ok', $detail);
     }
