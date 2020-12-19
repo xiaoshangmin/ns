@@ -12,8 +12,8 @@ use app\common\model\{Content, Wxuser};
  */
 class Comment extends Api
 {
-    protected $noNeedLogin = [''];
-    protected $noNeedRight = [''];
+    protected $noNeedLogin = ['listPrimary'];
+    protected $noNeedRight = ['listPrimary'];
     public $model = null;
 
     public function _initialize()
