@@ -2,12 +2,14 @@
 
 namespace app\common\model;
 
+use think\model\concern\SoftDelete;
 
 /**
  * 内容模型.
  */
 class Content extends BaseModel
 {
+    use SoftDelete;
     // 表名
     protected $name = 'content';
     // 开启自动写入时间戳字段
@@ -15,6 +17,8 @@ class Content extends BaseModel
     // 定义时间戳字段名
     protected $createTime = 'create_time';
     protected $updateTime = 'update_time';
+    protected $deleteTime = 'delete_time';
+    protected $defaultSoftDelete = 0;
 
     public static function onBeforeInsert($model)
     {

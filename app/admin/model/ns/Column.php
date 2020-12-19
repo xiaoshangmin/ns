@@ -41,7 +41,20 @@ class Column extends BaseModel
 
     public function getPcloumnList()
     {
-        return $this->field('id,name')->where('pid', 0)->select()->toArray();
+        $level1 = $this->field('id,name')->where('pid', 0)->select()->toArray();
+        $newList = [];
+        foreach($level1 as $val){
+            $newList[] = $val;
+            $level2 = $this->field('id,name')->where('pid', $val['id'])->select()->toArray();
+            if($level2){
+                foreach($level2 as &$v){
+                    $v['name'] = '└'.$v['name'];
+                }
+                $newList = array_merge($newList,$level2);
+            }
+        }
+        return $newList;
+
     }
 
     public function getTreeList()
@@ -52,11 +65,30 @@ class Column extends BaseModel
 
         foreach ($pList as $data) {
             $child = $this->getChild($data['id'], $total);
+            $data['haschild'] = 0;
+            if ($child) {
+                $data['haschild'] = 1;
+            }
             if ($data['id']) {
                 $treeList[] = $data;
             }
             if ($child) {
-                $treeList = array_merge($treeList, $child);
+                $newchild = [];
+                foreach($child as $v){
+                    $level3 = $this->getChild($v['id'], $total);
+                    $v['haschild'] = 0;
+                    if($level3){
+                        $v['haschild'] = 1;
+                    }
+                    if ($v['id']) {
+                        $newchild[] = $v;
+                    }
+                    if($level3){
+                        $newchild = array_merge($newchild, $level3);
+                    }
+                }
+
+                $treeList = array_merge($treeList, $newchild);
             }
         }
         return $treeList;

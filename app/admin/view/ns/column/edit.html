@@ -16,7 +16,7 @@
         <label class="control-label col-xs-12 col-sm-2">{:__('Icon')}:</label>
         <div class="col-xs-12 col-sm-8">
             <div class="input-group">
-                <input id="c-icon" data-rule="required" class="form-control" size="50" name="row[icon]" type="text" value="{$row.icon|htmlentities}" readonly>
+                <input id="c-icon" class="form-control" size="50" name="row[icon]" type="text" value="{$row.icon|htmlentities}" readonly>
                 <div class="input-group-addon no-border no-padding">
                     <span><button type="button" id="plupload-icon" class="btn btn-danger plupload" data-input-id="c-icon" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-multiple="false" data-preview-id="p-icon"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
                     <span><button type="button" id="fachoose-icon" class="btn btn-primary fachoose" data-input-id="c-icon" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>

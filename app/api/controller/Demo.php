@@ -5,6 +5,7 @@ namespace app\api\controller;
 use app\common\controller\Api;
 use Geohash;
 use Elasticsearch\ClientBuilder;
+use think\facade\Cache;
 
 /**
  * 示例接口.
@@ -223,6 +224,13 @@ class Demo extends Api
      */
     public function test1()
     {
+        $handler = Cache::store('redis')->handler();
+        $handler->hMset('user:1',['name'=>'张三','age'=>10]);
+        return $handler->hGet('user:1','name');
+        // $iterator = null;
+        // while($a = $handler->scan($iterator,'u*')){
+        //     $this->success('返回成功', $a);
+        // }
     }
 
     /**

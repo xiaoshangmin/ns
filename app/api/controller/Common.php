@@ -3,7 +3,7 @@
 namespace app\api\controller;
 
 use app\common\controller\Api;
-use app\common\model\{Ads, Navigation, Columns, Notice, Comment};
+use app\common\model\{Ads, Navigation, Columns, Notice};
 
 /**
  * 置顶配置数据

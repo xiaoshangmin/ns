@@ -57,6 +57,9 @@ class Column extends Backend
     {
         if ($this->request->isAjax()) {
             $list  = $this->model->getTreeList();
+            // echo '<pre>';
+            // print_r($list);
+            // exit();
             $total = count($list);
 
             $result = ['total' => $total, 'rows' => $list];

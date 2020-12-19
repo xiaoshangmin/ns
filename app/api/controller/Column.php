@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\common\controller\Api;
 use app\common\model\Columns;
+use think\facade\Cache;
 
 /**
  * 首页接口.
@@ -47,11 +48,21 @@ class Column extends Api
     public function child()
     {
         $pid = $this->request->post('pid/d') ?: 0;
+        $key = "column:child:id:".$pid;
+        $redis = Cache::store('redis')->handler();
+        $cache = $redis->get($key);
+        if($cache){
+            $this->success('ok',json_decode($cache,true));
+        }
         //一级栏目
         $columns = new Columns();
-        $child = $columns->getList(['status' => 1, 'pid' => $pid]);
-        $columnlist = [['id' => $pid, 'name' => '全部']];
-        $columnlist = array_merge($columnlist, $child);
+        $columnlist = $columns->getList(['status' => 1, 'pid' => $pid]);
+        foreach($columnlist as &$c){
+            $c['childlist'] = $columns->getList(['status' => 1, 'pid' => $c['id']]);
+        }
+        // $columnlist = [['id' => $pid, 'name' => '全部']];
+        // $columnlist = array_merge($columnlist, $child);
+        $redis->set($key,json_encode($columnlist,JSON_UNESCAPED_UNICODE),['ex'=>3600]);
         $this->success('ok',  $columnlist);
     }
 }

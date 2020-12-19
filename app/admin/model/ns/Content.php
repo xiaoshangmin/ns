@@ -24,6 +24,8 @@ class Content extends BaseModel
     protected $deleteTime = 'delete_time';
     protected $defaultSoftDelete = 0;
 
+    // protected $json = ['extra'];
+
     // 追加属性
     protected $append = [
         'create_time_text',
@@ -35,6 +37,7 @@ class Content extends BaseModel
         'is_online_text',
         'pcolumn_id',
         'column_id',
+        'addr_column_id',
     ];
 
     public function getPcolumnIdAttr($value, $data)
@@ -51,6 +54,15 @@ class Content extends BaseModel
         if ($data['column_ids']) {
             $columnIds = explode(',', $data['column_ids']);
             return $columnIds[1] ?? 0;
+        }
+        return 0;
+    }
+
+    public function getAddrColumnIdAttr($value, $data)
+    {
+        if ($data['column_ids']) {
+            $columnIds = explode(',', $data['column_ids']);
+            return $columnIds[2] ?? 0;
         }
         return 0;
     }
@@ -83,22 +95,33 @@ class Content extends BaseModel
         return json_encode($keys, JSON_UNESCAPED_UNICODE);
     }
 
-    protected function setColumnIdsAttr($value,$data)
+    protected function setExtraAttr($value)
+    {
+        if(empty($value)){
+            return json_encode([], JSON_UNESCAPED_UNICODE);
+        }
+        return $value;
+    }
+
+    protected function setPcolumnIdAttr($value,$data)
     {
         $columnIds = [];
         $columnIds[] = $data['pcolumn_id'] ?? 0;
         $columnIds[] = $data['column_id'] ?? 0;
-        return join(',',$columnIds);
+        $columnIds[] = $data['addr_column_id'] ?? 0;
+        $this->set('column_ids', join(',',$columnIds));
     }
 
-    public static function onBeforeWrite($content)
-    {
+    public static function onBeforeUpdate($content)
+    { 
         $columnIds[] = $content->pcolumn_id ?: 0;
         $columnIds[] = $content->column_id ?: 0;
+        $columnIds[] = $content->addr_column_id ?: 0;
         $columnIds = array_filter($columnIds);
         $columnIds =  join(',',$columnIds);
         $columnIds = rtrim($columnIds,',');
         $content->column_ids = $columnIds;
+       
     }
 
     public function getStatusList()

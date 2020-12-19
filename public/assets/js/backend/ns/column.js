@@ -58,7 +58,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
             //当内容渲染完成后
             table.on('post-body.bs.table', function (e, settings, json, xhr) {
                 //默认隐藏所有子节点
-                //$("a.btn[data-id][data-pid][data-pid!=0]").closest("tr").hide();
+                $("a.btn[data-id][data-pid][data-pid!=0]").closest("tr").hide();
                 $(".btn-node-sub.disabled").closest("tr").hide();
 
                 //显示隐藏子节点
@@ -115,14 +115,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
         api: {
             formatter: {
                 name: function (value, row, index) {
-                    return row.pid > 0 ? "<span class='text-muted'>" + value + "</span>" : value;
+                    return row.pid > 0 || row.haschild != 1 ? "<span class='text-muted'>" + value + "</span>" : value;
                 },
                 image: function (value, row, index) {
                     return '<span class="' + ( row.pid > 0 ? 'text-muted' : '') + '"><i class="' + value + '"></i></span>';
                 },
                 subnode: function (value, row, index) {
                     return '<a href="javascript:;" data-toggle="tooltip" title="' + __('Toggle sub menu') + '" data-id="' + row.id + '" data-pid="' + row.pid + '" class="btn btn-xs '
-                        + (row.pid == 0 ? 'btn-success' : 'btn-default disabled') + ' btn-node-sub"><i class="fa fa-sitemap"></i></a>';
+                        + (row.pid == 0 || row.haschild == 1  ? 'btn-success' : 'btn-default disabled') + ' btn-node-sub"><i class="fa fa-sitemap"></i></a>';
                 }
             },
             bindevent: function () {
