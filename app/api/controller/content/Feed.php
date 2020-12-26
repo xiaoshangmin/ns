@@ -5,7 +5,6 @@ namespace app\api\controller\content;
 use app\common\controller\Api;
 use think\exception\ValidateException;
 use app\common\model\{Content, LikeLog, Orders, Columns, ColumnContent, TopConfig};
-use App\Controller\Pccontent\Column;
 use think\facade\{Config, Log, Cache, Db};
 use EasyWeChat\Factory;
 use Geohash;

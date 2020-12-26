@@ -1,6 +1,6 @@
 <?php
 
-namespace app\admin\model\ns;
+namespace app\admin\model;
 
 use app\common\model\BaseModel;
 use think\model\concern\SoftDelete;
@@ -57,6 +57,13 @@ class Column extends BaseModel
 
     }
 
+    /**
+     * TODO 用递归优化
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-12-26
+     */
     public function getTreeList()
     {
         $total = $this->order('id', 'desc')->select()->toArray();

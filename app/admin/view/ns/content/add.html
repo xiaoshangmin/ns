@@ -10,7 +10,7 @@
         <label class="control-label col-xs-12 col-sm-2">栏目:</label>
         <div class="col-xs-12 col-sm-8"> 
             <div class="form-inline" data-toggle="cxselect" data-selects="first,second,three" data-required="true">
-                <select class="first form-control" name="row[pcolumn_id]" data-url="ns.column/cxselect?pid=0"></select>
+                <select class="first form-control" name="row[pcolumn_id]" data-url="ns.column/cxselect?pid=0" id="first"></select>
                 <select class="second form-control" name="row[column_id]" data-url="ns.column/cxselect" data-query-name="pid"></select>
                 <select class="three form-control" name="row[addr_column_id]" data-url="ns.column/cxselect" data-query-name="pid"></select>
             </div>
@@ -31,7 +31,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Content')}:</label>
         <div class="col-xs-12 col-sm-8">
-            <textarea id="c-content" class="form-control" rows="5" name="row[content]" cols="50"></textarea>
+            <textarea id="c-content" class="form-control" rows="15" name="row[content]" cols="50"></textarea>
         </div>
     </div>
     <div class="form-group">

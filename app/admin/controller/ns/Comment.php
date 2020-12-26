@@ -14,14 +14,14 @@ class Comment extends Backend
     
     /**
      * Comment模型对象
-     * @var \app\admin\model\ns\Comment
+     * @var \app\admin\model\Comment
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ns\Comment;
+        $this->model = new \app\admin\model\Comment;
         $this->view->assign("isOnlineList", $this->model->getIsOnlineList());
 
     }

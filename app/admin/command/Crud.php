@@ -315,11 +315,12 @@ class Crud extends Command
         $moduleName = 'admin';
         $modelModuleName = $local ? $moduleName : 'common';
         $validateModuleName = $local ? $moduleName : 'common';
-
+       
         //检查主表
         $modelName = $table = stripos($table, $prefix) === 0 ? substr($table, strlen($prefix)) : $table;
         $modelTableType = 'table';
         $modelTableTypeName = $modelTableName = $modelName;
+        
         $modelTableInfo = $dbconnect->query("SHOW TABLE STATUS LIKE '{$modelTableName}'", [], true);
 
         if (! $modelTableInfo) {

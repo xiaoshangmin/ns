@@ -18,14 +18,14 @@ class Content extends Backend
 
     /**
      * Content模型对象
-     * @var \app\admin\model\ns\Content
+     * @var \app\admin\model\Content
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ns\Content;
+        $this->model = new \app\admin\model\Content;
         $this->modelValidate = true;
         $this->view->assign("statusList", $this->model->getStatusList());
         $this->view->assign("topList", $this->model->getTopList());
@@ -96,6 +96,7 @@ class Content extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
                         validate($validate)->scene($this->modelSceneValidate ? 'edit' : $name)->check($params);
                     }
+                    $params['uid'] = 1;
                     $result = $this->model->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
@@ -166,6 +167,7 @@ class Content extends Backend
                     $this->error($e->getMessage());
                 }
                 if ($result !== false) {
+                    
                     $this->success();
                 } else {
                     $this->error(__('No rows were updated'));

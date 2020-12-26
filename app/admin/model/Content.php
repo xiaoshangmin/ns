@@ -1,6 +1,6 @@
 <?php
 
-namespace app\admin\model\ns;
+namespace app\admin\model;
 
 use app\common\model\BaseModel;
 use think\model\concern\SoftDelete;
@@ -16,7 +16,7 @@ class Content extends BaseModel
     protected $name = 'content';
 
     // 自动写入时间戳字段
-    protected $autoWriteTimestamp = false;
+    protected $autoWriteTimestamp = 'int';
 
     // 定义时间戳字段名
     protected $createTime = 'create_time';
@@ -40,6 +40,15 @@ class Content extends BaseModel
         'addr_column_id',
     ];
 
+    /**
+     * 获取栏目第一个值
+     *
+     * @param [type] $value
+     * @param [type] $data
+     * @return void
+     * @author xsm
+     * @since 2020-12-26
+     */
     public function getPcolumnIdAttr($value, $data)
     {
         if ($data['column_ids']) {
@@ -49,6 +58,15 @@ class Content extends BaseModel
         return 0;
     }
 
+    /**
+     * 获取栏目第二值
+     *
+     * @param [type] $value
+     * @param [type] $data
+     * @return void
+     * @author xsm
+     * @since 2020-12-26
+     */
     public function getColumnIdAttr($value, $data)
     {
         if ($data['column_ids']) {
@@ -58,6 +76,15 @@ class Content extends BaseModel
         return 0;
     }
 
+    /**
+     * 获取栏目第三个值
+     *
+     * @param [type] $value
+     * @param [type] $data
+     * @return void
+     * @author xsm
+     * @since 2020-12-26
+     */
     public function getAddrColumnIdAttr($value, $data)
     {
         if ($data['column_ids']) {
@@ -67,6 +94,15 @@ class Content extends BaseModel
         return 0;
     }
 
+    /**
+     * 获取图片url
+     *
+     * @param [type] $value
+     * @param [type] $data
+     * @return void
+     * @author xsm
+     * @since 2020-12-26
+     */
     public function getPicturesAttr($value, $data)
     {
         if ($value) {
@@ -82,6 +118,14 @@ class Content extends BaseModel
         return '';
     }
 
+    /**
+     * 格式化图片字段json
+     *
+     * @param [type] $value
+     * @return void
+     * @author xsm
+     * @since 2020-12-26
+     */
     protected function setPicturesAttr($value)
     {
         $keys = [];
@@ -95,33 +139,71 @@ class Content extends BaseModel
         return json_encode($keys, JSON_UNESCAPED_UNICODE);
     }
 
+    /**
+     * 格式化管理员可见信息json
+     *
+     * @param [type] $value
+     * @return void
+     * @author xsm
+     * @since 2020-12-26
+     */
     protected function setExtraAttr($value)
     {
-        if(empty($value)){
+        if (empty($value)) {
             return json_encode([], JSON_UNESCAPED_UNICODE);
         }
         return $value;
     }
 
-    protected function setPcolumnIdAttr($value,$data)
+    protected function setPcolumnIdAttr($value, $data)
     {
         $columnIds = [];
         $columnIds[] = $data['pcolumn_id'] ?? 0;
         $columnIds[] = $data['column_id'] ?? 0;
         $columnIds[] = $data['addr_column_id'] ?? 0;
-        $this->set('column_ids', join(',',$columnIds));
+        $columnIds = array_filter($columnIds);
+        $this->set('column_ids', join(',', $columnIds));
     }
 
-    public static function onBeforeUpdate($content)
-    { 
+    /**
+     * 动态设置栏目ids值
+     *
+     * @param [type] $content
+     * @return void
+     * @author xsm
+     * @since 2020-12-26
+     */
+    public static function onBeforeWrite($content)
+    {
         $columnIds[] = $content->pcolumn_id ?: 0;
         $columnIds[] = $content->column_id ?: 0;
         $columnIds[] = $content->addr_column_id ?: 0;
         $columnIds = array_filter($columnIds);
-        $columnIds =  join(',',$columnIds);
-        $columnIds = rtrim($columnIds,',');
+        $columnIds =  join(',', $columnIds);
+        $columnIds = rtrim($columnIds, ',');
         $content->column_ids = $columnIds;
-       
+    }
+
+    public static function onAfterWrite($content)
+    {
+        // 真实删除
+        ColumnContent::destroy(function ($query) use ($content) {
+            $query->where('cid', $content->id);
+        }, true);
+        $columnIds = explode(',', $content->column_ids);
+        //栏目关联内容
+        foreach ($columnIds as $columnId) {
+            $insert = [
+                'column_id' => $columnId,
+                'cid' => $content->id,
+                'top' => $content->top ?? 0,
+                'expiry_time' => $content->expiry_time ?? 0,
+                'status' => $content->status ?? 0,
+                'pay_status' => $content->pay_status ?? 0,
+                'is_online' => $content->is_online ?? 0,
+            ];
+            (new ColumnContent)->save($insert);
+        }
     }
 
     public function getStatusList()
@@ -196,24 +278,17 @@ class Content extends BaseModel
         return isset($list[$value]) ? $list[$value] : '';
     }
 
-    protected function setUpdateTimeAttr($value)
+    protected function setExpiryTimeAttr($value, $data)
     {
-        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
-    }
-
-    protected function setExpiryTimeAttr($value)
-    {
-        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
+        if ($data['top']) {
+            return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
+        }
+        return 0;
     }
 
     public function getDeleteTimeTextAttr($value, $data)
     {
         $value = $value ? $value : (isset($data['delete_time']) ? $data['delete_time'] : '');
         return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
-    }
-    
-    protected function setDeleteTimeAttr($value)
-    {
-        return $value === '' ? 0 : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 }

@@ -106,7 +106,25 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     //其中res则是包含了address/lat/lng等信息的JSON对象
                     console.log(res)
                 });
-                
+                $('#first').change(function(e){
+                    let id = e.target.value
+                    console.log(id)
+                    let url = e.currentTarget.dataset.url
+                    $.ajax({
+                        url: Config.fastadmin.api_url + url,
+                        type: 'post',
+                        success: function (ret) { 
+                            if(ret.code == 1){
+                                for(let item in ret.data){
+                                    if(id == ret.data[item].value){
+                                        $('#c-content').val(ret.data[item].template)
+                                    }
+                                }
+                            }
+                        }
+                    });
+            
+                })
                 Form.api.bindevent($("form[role=form]"));
             }
         }

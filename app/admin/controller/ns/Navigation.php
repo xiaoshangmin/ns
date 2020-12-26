@@ -14,14 +14,14 @@ class Navigation extends Backend
     
     /**
      * Navigation模型对象
-     * @var \app\admin\model\ns\Navigation
+     * @var \app\admin\model\Navigation
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ns\Navigation;
+        $this->model = new \app\admin\model\Navigation;
         $this->view->assign("linkTypeList", $this->model->getLinkTypeList());
         $this->view->assign("statusList", $this->model->getStatusList());
     }

@@ -14,14 +14,14 @@ class Notice extends Backend
     
     /**
      * Notice模型对象
-     * @var \app\admin\model\ns\Notice
+     * @var \app\admin\model\Notice
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ns\Notice;
+        $this->model = new \app\admin\model\Notice;
         $this->view->assign("statusList", $this->model->getStatusList());
         $this->view->assign("typeList", $this->model->getTypeList());
     }

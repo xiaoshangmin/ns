@@ -15,5 +15,6 @@ return [
     'Sort'          => '排序',
     'Status'        => '状态',
     'Status 0'      => '无效',
-    'Status 1'      => '有效'
+    'Status 1'      => '有效',
+    'Template'      => '文章模板',
 ];

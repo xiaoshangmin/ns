@@ -62,7 +62,7 @@ class Column extends Api
         }
         // $columnlist = [['id' => $pid, 'name' => '全部']];
         // $columnlist = array_merge($columnlist, $child);
-        $redis->set($key,json_encode($columnlist,JSON_UNESCAPED_UNICODE),['ex'=>3600]);
+        $redis->set($key,json_encode($columnlist,JSON_UNESCAPED_UNICODE),['ex'=>300]);
         $this->success('ok',  $columnlist);
     }
 }

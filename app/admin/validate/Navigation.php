@@ -1,10 +1,10 @@
 <?php
 
-namespace app\admin\validate\ns;
+namespace app\admin\validate;
 
 use think\Validate;
 
-class Column extends Validate
+class Navigation extends Validate
 {
     /**
      * 验证规则

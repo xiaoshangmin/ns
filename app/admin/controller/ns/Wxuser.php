@@ -14,14 +14,14 @@ class Wxuser extends Backend
     
     /**
      * Wxuser模型对象
-     * @var \app\admin\model\ns\Wxuser
+     * @var \app\admin\model\Wxuser
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ns\Wxuser;
+        $this->model = new \app\admin\model\Wxuser;
         $this->view->assign("sexList", $this->model->getSexList());
         $this->view->assign("statusList", $this->model->getStatusList());
     }

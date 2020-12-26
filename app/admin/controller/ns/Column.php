@@ -15,14 +15,14 @@ class Column extends Backend
     
     /**
      * Column模型对象
-     * @var \app\admin\model\ns\Column
+     * @var \app\admin\model\Column
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ns\Column;
+        $this->model = new \app\admin\model\Column;
         $this->view->assign("statusList", $this->model->getStatusList());
         $pcolumnList = $this->model->getPcloumnList();
         $pcolumnList = array_column($pcolumnList,'name','id');
@@ -45,9 +45,9 @@ class Column extends Backend
          
         if ($pid !== '') {
             $where['pid'] = $pid;
-            $categorylist = Db::name('column')->where($where)->field('id as value,name')->order('id desc')->select();
+            $categorylist = Db::name('column')->where($where)->field('id as value,name,template')->order('id asc')->select();
         }
-        $this->success('模板', null, $categorylist);
+        $this->success('ok', null, $categorylist);
     }
 
     /**

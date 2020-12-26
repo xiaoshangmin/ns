@@ -34,5 +34,6 @@ return [
     //版本号
     'version' => '3.0.2',
     //API接口地址
-    'api_url' => 'https://api.iuok.cn',
+    // 'api_url' => 'https://api.iuok.cn',
+    'api_url' => '',
 ];

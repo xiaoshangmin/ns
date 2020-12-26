@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\common\controller\Api;
 use app\common\model\{Ads, Navigation, Columns, Notice};
+use think\facade\Cache;
 
 /**
  * 置顶配置数据
@@ -23,6 +24,12 @@ class Common extends Api
 
     public function config()
     {
+        $key = "mini:common:config";
+        $redis = Cache::store('redis')->handler();
+        $cache = $redis->get($key);
+        if($cache){
+            $this->success('ok',json_decode($cache,true));
+        }
         $help = (new Notice())->getList(['status' => 1, 'type' => 2], 1, 1);
         $notice = (new Notice())->getList(['status' => 1, 'type' => 3], 1, 1);
         $data = ['help' => []];
@@ -49,6 +56,7 @@ class Common extends Api
             'child' => $column,
         ];
         $data['columns'] = $column;
+        $redis->set($key,json_encode($data,JSON_UNESCAPED_UNICODE),['ex'=>300]);
         $this->success('ok', $data);
     }
 }
