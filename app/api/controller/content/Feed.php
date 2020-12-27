@@ -14,8 +14,8 @@ use Geohash;
  */
 class Feed extends Api
 {
-    protected $noNeedLogin = ['lists', 'nearby','detail'];
-    protected $noNeedRight = ['lists', 'nearby','detail'];
+    protected $noNeedLogin = ['lists', 'nearby', 'detail'];
+    protected $noNeedRight = ['lists', 'nearby', 'detail'];
     public $model = null;
 
     public function _initialize()
@@ -76,7 +76,7 @@ class Feed extends Api
     {
         //ALTER TABLE ns_content ADD FULLTEXT INDEX ft_index (content) WITH PARSER ngram;
         $cid = $this->request->get('cid/d');
-        $detail = $this->model->getById($cid, $this->auth->uid?:0);
+        $detail = $this->model->getById($cid, $this->auth->uid ?: 0);
         $this->model->viewInc($cid);
         $this->success('ok', $detail);
     }
@@ -84,11 +84,14 @@ class Feed extends Api
     public function like()
     {
         //加锁防止频繁点击
-        Cache::store('redis')->handler();
+        $uid = $this->auth->uid;
+        if (false === limit_operation_count("like:{$uid}", 5, 60)) {
+            $this->error('操作过于频繁,请稍候再试');
+        }
         $cid = $this->request->post('cid/d');
-        if (false === (new LikeLog())->isLike($this->auth->uid, $cid, LikeLog::CONTENT_LIKE_TYPE)) {
+        if (false === (new LikeLog())->isLike($uid, $cid, LikeLog::CONTENT_LIKE_TYPE)) {
             $this->model->likeInc($cid);
-            (new LikeLog())->addLog($this->auth->uid, $cid, LikeLog::CONTENT_LIKE_TYPE);
+            (new LikeLog())->addLog($uid, $cid, LikeLog::CONTENT_LIKE_TYPE);
         }
         $this->success();
     }
@@ -96,10 +99,13 @@ class Feed extends Api
     public function unlike()
     {
         //加锁防止频繁点击
-        Cache::store('redis')->handler();
+        $uid = $this->auth->uid;
+        if (false === limit_operation_count("like:{$uid}", 5, 60)) {
+            $this->error('操作过于频繁,请稍候再试');
+        }
         $cid = $this->request->post('cid/d');
         $this->model->likeDec($cid);
-        (new LikeLog())->removeLog($this->auth->uid, $cid, LikeLog::CONTENT_LIKE_TYPE);
+        (new LikeLog())->removeLog($uid, $cid, LikeLog::CONTENT_LIKE_TYPE);
         $this->success();
     }
 
@@ -108,7 +114,11 @@ class Feed extends Api
         if (true === $this->auth->isBlock()) {
             $this->error('此账号已被封号');
         }
-        //TODO 加锁
+        //加锁
+        $uid = $this->auth->uid;
+        if (false === lock("submit:{$uid}", 10)) {
+            $this->error('操作过于频繁,请稍候再试');
+        }
         $params = $this->request->post();
         $log = 'submit:' . json_encode($params, JSON_UNESCAPED_UNICODE);
         Log::record($log);
@@ -118,18 +128,17 @@ class Feed extends Api
             } catch (ValidateException $e) {
                 $this->error($e->getMessage());
             }
-            $params['uid'] = $this->auth->uid;
+            $params['uid'] = $uid;
             //订单总金额
             $orderAmount = 0;
             //获取栏目 
             $cloumns = explode(',', $params['column_ids']);
-            // foreach ($cloumns as $cloumnId) {
             $columnInfo = Columns::find($cloumns[0]);
             if (empty($columnInfo)) {
                 $this->error('栏目不存在或已下架');
             }
             $orderAmount = bcadd($orderAmount, $columnInfo['price']);
-            // }
+
             unset($cloumnId);
             $geohash = new Geohash();
             $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
@@ -187,11 +196,11 @@ class Feed extends Api
     {
         $params = $this->request->post();
         $cid = $params['id'] ?? 0;
-        $content = $this->model->field('id,uid,column_ids')->where('id',$cid)->find();
-        if(empty($content)){
+        $content = $this->model->field('id,uid,column_ids')->where('id', $cid)->find();
+        if (empty($content)) {
             $this->error('内容不存在');
         }
-        if($content['uid'] != $this->auth->uid){
+        if ($content['uid'] != $this->auth->uid) {
             $this->error('禁止操作');
         }
         $cloumns = explode(',', $content['column_ids']);
