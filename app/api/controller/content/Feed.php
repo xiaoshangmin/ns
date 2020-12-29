@@ -5,7 +5,7 @@ namespace app\api\controller\content;
 use app\common\controller\Api;
 use think\exception\ValidateException;
 use app\common\model\{Content, LikeLog, Orders, Columns, ColumnContent, TopConfig};
-use think\facade\{Config, Log, Cache, Db};
+use think\facade\{Config, Log, Env, Db};
 use EasyWeChat\Factory;
 use Geohash;
 
@@ -77,6 +77,12 @@ class Feed extends Api
         //ALTER TABLE ns_content ADD FULLTEXT INDEX ft_index (content) WITH PARSER ngram;
         $cid = $this->request->get('cid/d');
         $detail = $this->model->getById($cid, $this->auth->uid ?: 0);
+        //管理员可见内容
+        $adminUids = Env::get('admin.uid', 0);
+        $adminUids = explode(',', $adminUids);
+        if (!in_array($this->auth->uid, $adminUids)) {
+            $detail['extra'] = [];
+        }
         $this->model->viewInc($cid);
         $this->success('ok', $detail);
     }
@@ -123,10 +129,17 @@ class Feed extends Api
         $log = 'submit:' . json_encode($params, JSON_UNESCAPED_UNICODE);
         Log::record($log);
         if ($params) {
-            try {
-                validate(\app\api\validate\content\Feed::class)->check($params);
-            } catch (ValidateException $e) {
-                $this->error($e->getMessage());
+            // 是否委托发布
+            if (!$params['entrust']) {
+                try {
+                    validate(\app\api\validate\content\Feed::class)->check($params);
+                } catch (ValidateException $e) {
+                    $this->error($e->getMessage());
+                }
+            }else{
+                if(empty($params['mobile'])){
+                    $this->error('请输入手机号！');
+                }
             }
             $params['uid'] = $uid;
             //订单总金额
@@ -162,7 +175,7 @@ class Feed extends Api
             }
             $params['orderAmount'] = $orderAmount;
             //新增订单
-            if ($orderAmount) {
+            if ($orderAmount && $this->_need_pay) {
                 $order = new Orders();
                 $ret = $order->add($params);
                 //生成预支付信息

@@ -17,7 +17,7 @@ use think\App;
 use think\Loader;
 use think\Request;
 use think\Response;
-use think\facade\Config;
+use think\facade\{Config,Env};
 use app\common\library\Auth;
 use think\exception\ValidateException;
 use think\exception\HttpResponseException;
@@ -80,6 +80,7 @@ class Api
     protected $_error = '';
     protected $_user = null;
     protected $_token = '';
+    protected $_need_pay = true;
 
     /**
      * 构造方法.
@@ -92,7 +93,7 @@ class Api
 
         // 控制器初始化
         $this->_initialize();
-
+        $this->_need_pay = Env::get('app.need_pay', true);
         // 前置操作方法
         if ($this->beforeActionList) {
             foreach ($this->beforeActionList as $method => $options) {
