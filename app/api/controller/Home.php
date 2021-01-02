@@ -19,7 +19,7 @@ class Home extends Api
     }
 
     /**
-     * 首页 banner,栏目，头条必读
+     * 未读数
      *
      * @return void
      * @author xsm
@@ -27,7 +27,6 @@ class Home extends Api
      */
     public function index()
     {
-        // $params = $this->request->post();
         $uid = $this->auth->uid ? :0;
         $unread = (new Comment())->getUnreadCommentNum($uid);
         $data['common'] = ['unread' => $unread];

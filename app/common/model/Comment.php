@@ -30,7 +30,7 @@ class Comment extends BaseModel
      */
     public function replayMe(int $uid, int $page, int $pageSize)
     {
-        $where = [['to_uid', '=', $uid], ['delete_time', '=', '0'],['is_online','=',1]];
+        $where = [['to_uid', '=', $uid],['uid', '<>', $uid], ['delete_time', '=', '0'],['is_online','=',1]];
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
             'id', 'cid', 'uid', 'content', 'create_time'
