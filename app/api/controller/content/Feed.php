@@ -140,6 +140,7 @@ class Feed extends Api
                 if(empty($params['mobile'])){
                     $this->error('请输入手机号！');
                 }
+                $params['status'] = 0;
             }
             $params['uid'] = $uid;
             //订单总金额
