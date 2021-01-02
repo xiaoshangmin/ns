@@ -27,6 +27,12 @@ class Column extends Api
      */
     public function list()
     {
+        $key = "mini:column:list";
+        $redis = Cache::store('redis')->handler();
+        $cache = $redis->get($key);
+        if ($cache) {
+            $this->success('ok',json_decode($cache,true));
+        }
         //一级栏目
         $columns = new Columns();
         $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
@@ -35,7 +41,9 @@ class Column extends Api
         foreach ($pcloumn as &$val) {
             $child[$val['id']] = $columns->getList(['status' => 1, 'pid' => $val['id']]);
         }
-        $this->success('ok', ['pcloumn' => $pcloumn, 'child' => $child]);
+        $data = ['pcloumn' => $pcloumn, 'child' => $child];
+        $redis->set($key, json_encode($data, JSON_UNESCAPED_UNICODE), ['ex' => 300]);
+        $this->success('ok', $data);
     }
 
     /**

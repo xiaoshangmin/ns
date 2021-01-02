@@ -28,7 +28,7 @@ class Common extends Api
         $redis = Cache::store('redis')->handler();
         $cache = $redis->get($key);
         if ($cache) {
-            // $this->success('ok',json_decode($cache,true));
+            $this->success('ok',json_decode($cache,true));
         }
         $help = (new Notice())->getList(['status' => 1, 'type' => 2], 1, 1);
         $notice = (new Notice())->getList(['status' => 1, 'type' => 3], 1, 1);
