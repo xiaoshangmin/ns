@@ -5,7 +5,7 @@ namespace app\common\model;
 use think\model\concern\SoftDelete;
 use GuzzleHttp\Client;
 use EasyWeChat\Factory;
-use think\facade\Config;
+use think\facade\{Config,Log};
 
 /**
  * 内容模型.
@@ -395,6 +395,8 @@ class Content extends BaseModel
         } catch (\Exception $e) {
             return ['code' => 1, 'msg' => $e->getMessage()];
         }
+        $log = 'msgSecCheck:' . $response->getBody();
+        Log::record($log);
         $res = json_decode($response->getBody(), true);
         if (87014 == $res['errcode']) {
             return ['code' => 1, 'msg' => '含有违法违规内容'];
