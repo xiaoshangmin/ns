@@ -3,8 +3,7 @@
 namespace app\api\controller;
 
 use app\common\controller\Api;
-use app\common\model\{Ads, Navigation, Columns, Notice, Comment};
-
+use app\common\model\Comment;
 /**
  * 首页接口.
  */

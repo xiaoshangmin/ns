@@ -4,8 +4,7 @@ namespace app\api\controller;
 
 use app\common\controller\Api;
 use app\common\model\{Ads, Navigation, Columns, Notice};
-use think\facade\{Cache, Env};
-
+use think\facade\Cache;
 /**
  * 置顶配置数据
  */

@@ -19,7 +19,7 @@ class Columns extends BaseModel
  
     protected $deleteTime = 'delete_time'; 
 
-    public function getList(array $condition)
+    public function getList(array $condition):array
     {
         $where[] = ['delete_time','=','0'];
         if (isset($condition['status'])) {

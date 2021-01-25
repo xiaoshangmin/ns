@@ -3,6 +3,7 @@
 namespace app\api\validate\content;
 
 use think\Validate;
+use app\common\model\Content;
 
 class Feed extends Validate
 {
@@ -14,6 +15,7 @@ class Feed extends Validate
         'column_ids' => 'require',
         'contacts' => 'require',
         'address'    => 'require',
+        'content'  => 'msgSecCheck:content'
     ];
 
     /**
@@ -32,12 +34,22 @@ class Feed extends Validate
      */
     protected $field = [];
 
+    protected function msgSecCheck($value, $rule, $data = [])
+    {
+        $data = (new Content())->msgSecCheck($value);
+        if ($data['code']) {
+            return $data['msg'];
+        }
+        return true;
+    }
+
+
     /**
      * 验证场景.
      */
     protected $scene = [
-        'add'  => ['mobile', 'column_id', 'contacts', 'address'],
-        'edit' => ['mobile', 'column_id', 'contacts', 'address'],
+        'add'  => ['mobile', 'column_id', 'contacts', 'address', 'content'],
+        'edit' => ['mobile', 'column_id', 'contacts', 'address', 'content'],
     ];
 
     public function __construct()

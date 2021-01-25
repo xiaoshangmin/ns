@@ -80,7 +80,7 @@ class Comment extends BaseModel
      * @author xsm
      * @since 2020-10-01
      */
-    public function getList(array $condition, int $page, int $pageSize)
+    public function getList(array $condition, int $page, int $pageSize):array
     {
         $where = [['pid', '=', 0], ['delete_time', '=', '0'],['is_online','=',1]];
         if (isset($condition['cid']) && !empty($condition['cid'])) {
@@ -159,7 +159,7 @@ class Comment extends BaseModel
     }
 
 
-    public function formatValue(array $data)
+    public function formatValue(array $data):array
     {
         $config = get_addon_config('cloudstore');
         $qiniuDomain = $config['domain'];

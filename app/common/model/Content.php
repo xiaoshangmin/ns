@@ -3,6 +3,9 @@
 namespace app\common\model;
 
 use think\model\concern\SoftDelete;
+use GuzzleHttp\Client;
+use EasyWeChat\Factory;
+use think\facade\Config;
 
 /**
  * 内容模型.
@@ -53,13 +56,13 @@ class Content extends BaseModel
     {
         $detail = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time','extra'
-        ])->where('id', $cid)->find();//->where('status', 1)
+            'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time', 'extra'
+        ])->where('id', $cid)->find(); //->where('status', 1)
         if (empty($detail)) {
             return [];
         }
-        $detail = $detail->toArray(); 
-        $detail['extra']= json_decode($detail['extra'],true);
+        $detail = $detail->toArray();
+        $detail['extra'] = json_decode($detail['extra'], true);
         return $detail;
     }
 
@@ -183,11 +186,11 @@ class Content extends BaseModel
         //                 MATCH (content)
         // AGAINST ('{$keyword}') LIMIT {$limit}";
         // echo $sql;exit();
-        $whereArr = ['pay_status=1',"MATCH (content) AGAINST ('{$keyword}')"];
-        if($columnId){
+        $whereArr = ['pay_status=1', "MATCH (content) AGAINST ('{$keyword}')"];
+        if ($columnId) {
             $whereArr[] = "FIND_IN_SET({$columnId},column_ids)";
         }
-        $whereRaw = join(' AND ',$whereArr);
+        $whereRaw = join(' AND ', $whereArr);
         $lists = $this->whereRaw($whereRaw)->select()->toArray();
         $lists = (new Content())->formatMultiValue($lists, $uid);
         return $lists;
@@ -208,7 +211,7 @@ class Content extends BaseModel
             ->select()->toArray();
         if (empty($lists)) {
             return [];
-        } 
+        }
         return $lists;
     }
 
@@ -231,7 +234,7 @@ class Content extends BaseModel
             'expiry_time' => ['expiry_time', '>', time()],
             'status' => 1,
             'is_online' => 1,
-        ]; 
+        ];
         if (isset($condition['keyword']) && !empty($condition['keyword'])) {
             $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
         }
@@ -260,10 +263,10 @@ class Content extends BaseModel
         }
         if (isset($condition['top']) && is_numeric($condition['top'])) {
             $where[] = ['top', '=', intval($condition['top'])];
-        } 
+        }
         if (isset($condition['is_online']) && is_numeric($condition['is_online'])) {
             $where[] = ['is_online', '=', intval($condition['is_online'])];
-        } 
+        }
         if (isset($condition['keyword'])) {
             $where[] = $condition['keyword'];
         }
@@ -281,7 +284,7 @@ class Content extends BaseModel
             ->select()->toArray();
         if (empty($lists)) {
             return [];
-        } 
+        }
         return $lists;
     }
 
@@ -369,5 +372,52 @@ class Content extends BaseModel
         ColumnContent::where('cid', $cid)->save([
             'pay_status' => $status
         ]);
+    }
+
+    /**
+     * 敏感内容过滤
+     *
+     * @param string $accessToken
+     * @param string $content
+     * @return void
+     * @author xsm
+     * @since 2020-07-17
+     */
+    public function msgSecCheck(string $content): array
+    {
+
+        $accessToken = $this->getAccessToken();
+        $url = "https://api.weixin.qq.com/wxa/msg_sec_check?access_token={$accessToken}";
+        $data = json_encode(['content' => $content], JSON_UNESCAPED_UNICODE);
+        try {
+            $client = new Client();
+            $response = $client->post($url, ['body' => $data]);
+        } catch (\Exception $e) {
+            return ['code' => 1, 'msg' => $e->getMessage()];
+        }
+        $res = json_decode($response->getBody(), true);
+        if (87014 == $res['errcode']) {
+            return ['code' => 1, 'msg' => '含有违法违规内容'];
+        }
+        return ['code' => 0, 'msg' => 'ok'];
+    }
+
+    // public function imgSecCheck($fileUrl)
+    // {
+    //     $accessToken = $this->getAccessToken();
+    //     $url = "https://api.weixin.qq.com/wxa/img_sec_check?access_token={$accessToken}";
+    //     $media = curl_file_create($fileUrl, 'image/jpeg');
+    //     $client = new Client();
+    //     $response = $client->post($url, ['body' => ['media' => $media]]);
+    //     return json_decode($response->getBody(), true);
+    // }
+
+    public function getAccessToken(): string
+    {
+        $config = Config::get('api.miniprogram.ns');
+        $app = Factory::officialAccount($config);
+        $accessToken = $app->access_token;
+        $token = $accessToken->getToken();
+        return $token['access_token'] ?? '';
     }
 }
