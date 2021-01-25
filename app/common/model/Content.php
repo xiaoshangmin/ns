@@ -419,7 +419,7 @@ class Content extends BaseModel
         $config = Config::get('api.miniprogram.ns');
         $app = Factory::officialAccount($config);
         $accessToken = $app->access_token;
-        $token = $accessToken->getToken();
+        $token = $accessToken->getToken(true);
         return $token['access_token'] ?? '';
     }
 }
