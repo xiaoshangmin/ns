@@ -251,6 +251,57 @@ class Feed extends Api
     }
 
     /**
+     * 付费置顶文章
+     *
+     * @return void
+     * @author xsm
+     * @since 2020-12-18
+     */
+    public function top()
+    {
+        $params = $this->request->post();
+        $cid = $params['id'] ?? 0;
+        $content = $this->model->field('id,uid,column_ids')->where('id', $cid)->find();
+        if (empty($content)) {
+            $this->error('内容不存在');
+        }
+        if ($content['uid'] != $this->auth->uid) {
+            $this->error('禁止操作');
+        }
+        $cloumns = explode(',', $content['column_ids']);
+        $columnInfo = Columns::find($cloumns[0]);
+        if (empty($columnInfo)) {
+            $this->error('关联栏目不存在或已下架');
+        }
+        $data['orderAmount'] = $columnInfo['refresh_price'];
+        $data['uid'] = $this->auth->uid;
+        $data['top_id'] = 0;
+        $data['cid'] = $content['id'];
+        $log = 'top:' . json_encode($data, JSON_UNESCAPED_UNICODE);
+        Log::record($log);
+        //新增订单
+        if ($data['orderAmount']) {
+            $order = new Orders();
+            $ret = $order->add($data);
+            //生成预支付信息
+            $result = $this->getPrepayInfo([
+                'out_trade_no' => $ret->order_sn,
+                'openid' => $this->auth->openid,
+                'total_fee' => $ret->order_amount,
+            ]);
+            $log = 'getPrepayInfo:' . json_encode($result, JSON_UNESCAPED_UNICODE);
+            Log::record($log);
+            if ($result) {
+                $this->success('ok', $result, 1000);
+            }
+        } else {
+            //免费发布
+            $this->model->changePayStatus($data['cid'], Orders::PAY_SUCCESS);
+        }
+        $this->success('ok');
+    }
+
+    /**
      * 获取小程序支付信息
      *
      * @param array $data
