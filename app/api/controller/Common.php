@@ -5,6 +5,7 @@ namespace app\api\controller;
 use app\common\controller\Api;
 use app\common\model\{Ads, Navigation, Columns, Notice};
 use think\facade\Cache;
+
 /**
  * 置顶配置数据
  */
@@ -23,12 +24,12 @@ class Common extends Api
 
     public function config()
     {
-        $key = "mini:common:config";
-        $redis = Cache::store('redis')->handler();
-        $cache = $redis->get($key);
-        if ($cache) {
-            $this->success('ok',json_decode($cache,true));
-        }
+        // $key = "mini:common:config";
+        // $redis = Cache::store('redis')->handler();
+        // $cache = $redis->get($key);
+        // if ($cache) {
+        //     $this->success('ok',json_decode($cache,true));
+        // }
         $help = (new Notice())->getList(['status' => 1, 'type' => 2], 1, 1);
         $notice = (new Notice())->getList(['status' => 1, 'type' => 3], 1, 1);
         $data = ['help' => [], 'need_pay' => $this->_need_pay];
@@ -42,6 +43,10 @@ class Common extends Api
         $data['banner'] = (new Ads())->getBannerList();
         $data['navigation'] = (new Navigation())->getNavList();
         $data['notice'] = (new Notice())->getList(['status' => 1, 'type' => 1], 1, 10);
+        $about = (new Notice())->getList(['status' => 1, 'type' => 4], 1, 1);
+        $data['about'] = $about[0] ?? [];
+        $publishNotice = (new Notice())->getList(['status' => 1, 'type' => 3], 1, 1);
+        $data['publish_notice'] = $publishNotice[0] ?? [];
         //一级栏目
         $columns = new Columns();
         $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
@@ -55,7 +60,7 @@ class Common extends Api
             'child' => $column,
         ];
         $data['columns'] = $column;
-        $redis->set($key, json_encode($data, JSON_UNESCAPED_UNICODE), ['ex' => 300]);
+        // $redis->set($key, json_encode($data, JSON_UNESCAPED_UNICODE), ['ex' => 300]);
         $this->success('ok', $data);
     }
 }

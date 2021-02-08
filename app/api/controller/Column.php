@@ -27,12 +27,12 @@ class Column extends Api
      */
     public function list()
     {
-        $key = "mini:column:list";
-        $redis = Cache::store('redis')->handler();
-        $cache = $redis->get($key);
-        if ($cache) {
-            $this->success('ok',json_decode($cache,true));
-        }
+        // $key = "mini:column:list";
+        // $redis = Cache::store('redis')->handler();
+        // $cache = $redis->get($key);
+        // if ($cache) {
+        //     $this->success('ok',json_decode($cache,true));
+        // }
         //一级栏目
         $columns = new Columns();
         $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
@@ -42,7 +42,7 @@ class Column extends Api
             $child[$val['id']] = $columns->getList(['status' => 1, 'pid' => $val['id']]);
         }
         $data = ['pcloumn' => $pcloumn, 'child' => $child];
-        $redis->set($key, json_encode($data, JSON_UNESCAPED_UNICODE), ['ex' => 300]);
+        // $redis->set($key, json_encode($data, JSON_UNESCAPED_UNICODE), ['ex' => 300]);
         $this->success('ok', $data);
     }
 
@@ -56,12 +56,12 @@ class Column extends Api
     public function child()
     {
         $pid = $this->request->post('pid/d') ?: 0;
-        $key = "column:child:id:".$pid;
-        $redis = Cache::store('redis')->handler();
-        $cache = $redis->get($key);
-        if($cache){
-            $this->success('ok',json_decode($cache,true));
-        }
+        // $key = "column:child:id:".$pid;
+        // $redis = Cache::store('redis')->handler();
+        // $cache = $redis->get($key);
+        // if($cache){
+        //     $this->success('ok',json_decode($cache,true));
+        // }
         //一级栏目
         $columns = new Columns();
         $columnlist = $columns->getList(['status' => 1, 'pid' => $pid]);
@@ -70,7 +70,7 @@ class Column extends Api
         }
         // $columnlist = [['id' => $pid, 'name' => '全部']];
         // $columnlist = array_merge($columnlist, $child);
-        $redis->set($key,json_encode($columnlist,JSON_UNESCAPED_UNICODE),['ex'=>300]);
+        // $redis->set($key,json_encode($columnlist,JSON_UNESCAPED_UNICODE),['ex'=>300]);
         $this->success('ok',  $columnlist);
     }
 }
