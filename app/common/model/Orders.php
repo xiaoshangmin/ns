@@ -21,6 +21,10 @@ class Orders extends BaseModel
     const PAY_FAIL = 2;
     const NO_PAY = 0;
 
+    const ORDER_TYPE_SUBMIT = 0;
+    const ORDER_TYPE_REFRESH = 1;
+    const ORDER_TYPE_TOP = 2;
+
     public static function onBeforeInsert($order)
     {
         $order->order_sn = date("YmdHis") . substr(microtime(), 2, 4);
@@ -33,6 +37,7 @@ class Orders extends BaseModel
         $insert['cid'] = intval($data['cid']);
         $insert['order_amount'] = floatval($data['orderAmount']);
         $insert['top_id'] = intval($data['top_id']);
+        $insert['order_type'] = intval($data['order_type']);
         $this->data($insert, true)->save();
         return $this;
     }

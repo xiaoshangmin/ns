@@ -5,7 +5,7 @@ namespace app\common\model;
 use think\model\concern\SoftDelete;
 use GuzzleHttp\Client;
 use EasyWeChat\Factory;
-use think\facade\{Config,Log};
+use think\facade\{Config, Log};
 
 /**
  * 内容模型.
@@ -25,12 +25,21 @@ class Content extends BaseModel
 
     public static function onBeforeInsert($model)
     {
-        //置顶&置顶时间
+        //置顶&计算置顶时间
         $model->top = 0;
         $model->expiry_time = 0;
         if ($model->top_id) {
             $model->expiry_time = (new TopConfig())->getExpiryTimeById($model->top_id);
             $model->top = 1;
+        }
+    }
+
+    public function updateExpiryTimeByCid(int $cid)
+    {
+        $content = $this->where('id', $cid)->find();
+        if (!is_null($content)) {
+            $expiryTime = (new TopConfig())->getExpiryTimeById($content->top_id);
+            $this->addExpiryTime($cid, $expiryTime);
         }
     }
 
@@ -371,6 +380,26 @@ class Content extends BaseModel
         ]);
         ColumnContent::where('cid', $cid)->save([
             'pay_status' => $status
+        ]);
+    }
+
+    /**
+     * 延迟过期时间
+     *
+     * @param integer $cid
+     * @param integer $expiryTime
+     * @return void
+     * @author xsm
+     * @since 2020-09-20
+     */
+    public function addExpiryTime(int $cid, int $expiryTime)
+    {
+        $this->where('id', $cid)->save([
+            'expiry_time' => $expiryTime
+        ]);
+        ColumnContent::where('cid', $cid)->save([
+            'expiry_time' => $expiryTime,
+            'top' => 1,
         ]);
     }
 

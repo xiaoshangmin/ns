@@ -8,6 +8,7 @@ use app\common\model\{Content, LikeLog, Orders, Columns, ColumnContent, TopConfi
 use think\facade\{Config, Log, Env, Db};
 use EasyWeChat\Factory;
 use Geohash;
+use Order;
 
 /**
  * 首页接口.
@@ -169,7 +170,7 @@ class Feed extends Api
                     'expiry_time' => $this->model->expiry_time,
                 ]);
             }
-            //获取置顶类型
+            //获取置顶类型对应的价格
             if (isset($params['top_id']) && !empty($params['top_id'])) {
                 $topInfo = TopConfig::find($params['top_id']);
                 $orderAmount = bcadd($orderAmount, $topInfo['price']);
@@ -225,6 +226,7 @@ class Feed extends Api
         $data['orderAmount'] = $columnInfo['refresh_price'];
         $data['uid'] = $this->auth->uid;
         $data['top_id'] = 0;
+        $data['order_type'] = Orders::ORDER_TYPE_REFRESH;
         $data['cid'] = $content['id'];
         $log = 'refresh:' . json_encode($data, JSON_UNESCAPED_UNICODE);
         Log::record($log);
@@ -261,6 +263,7 @@ class Feed extends Api
     {
         $params = $this->request->post();
         $cid = $params['id'] ?? 0;
+        $topId = $params['top_id'] ?? 0;
         $content = $this->model->field('id,uid,column_ids')->where('id', $cid)->find();
         if (empty($content)) {
             $this->error('内容不存在');
@@ -273,9 +276,12 @@ class Feed extends Api
         if (empty($columnInfo)) {
             $this->error('关联栏目不存在或已下架');
         }
-        $data['orderAmount'] = $columnInfo['refresh_price'];
+
+        $topInfo = TopConfig::find($params['top_id']); 
+        $data['orderAmount'] =  $topInfo['price'];
         $data['uid'] = $this->auth->uid;
-        $data['top_id'] = 0;
+        $data['top_id'] = $topId;
+        $data['order_type'] = Orders::ORDER_TYPE_TOP;
         $data['cid'] = $content['id'];
         $log = 'top:' . json_encode($data, JSON_UNESCAPED_UNICODE);
         Log::record($log);
