@@ -319,6 +319,7 @@ class Content extends BaseModel
             if (isset($data['pictures']) && !empty($data['pictures'])) {
                 foreach ($data['pictures'] as &$pic) {
                     $url = $qiniuDomain . '/' . $pic['key'];
+                    $pic['url'] = "{$url}?imageMogr2/auto-orient/thumbnail/300x2000%3E/quality/70/interlace/1";
                     $pic['thumbnailUrl'] = "{$url}?imageMogr2/auto-orient/thumbnail/300x2000%3E/quality/70/interlace/1";
                     $pic['smallPicUrl'] = "{$url}?imageMogr2/auto-orient/thumbnail/400x2000%3E/quality/70/interlace/1";
                     $pic['middlePicUrl'] = "{$url}?imageMogr2/auto-orient/thumbnail/1500x2000%3E/quality/70/interlace/1";
