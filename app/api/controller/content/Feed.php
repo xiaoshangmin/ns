@@ -8,7 +8,6 @@ use app\common\model\{Content, LikeLog, Orders, Columns, ColumnContent, TopConfi
 use think\facade\{Config, Log, Env, Db};
 use EasyWeChat\Factory;
 use Geohash;
-use Order;
 
 /**
  * 首页接口.
@@ -137,8 +136,8 @@ class Feed extends Api
                 } catch (ValidateException $e) {
                     $this->error($e->getMessage());
                 }
-            }else{
-                if(empty($params['mobile'])){
+            } else {
+                if (empty($params['mobile'])) {
                     $this->error('请输入手机号！');
                 }
                 $params['status'] = 0;
@@ -200,6 +199,52 @@ class Feed extends Api
         $this->error();
     }
 
+
+    public function modify()
+    {
+        if (true === $this->auth->isBlock()) {
+            $this->error('此账号已被封号');
+        }
+        //加锁
+        $uid = $this->auth->uid;
+        if (false === lock("submit:{$uid}", 10)) {
+            $this->error('操作过于频繁,请稍候再试');
+        }
+        $params = $this->request->post();
+        $cid = $params['id'] ?? 0;
+        if (empty($cid)) {
+            $this->error('内容不存在');
+        }
+        $content = Content::where('id', $cid)->find();
+        if (empty($content)) {
+            $this->error('内容不存在');
+        }
+        if ($content->uid != $this->auth->uid) {
+            $this->error('禁止操作');
+        }
+
+        $log = 'modify:' . json_encode($params, JSON_UNESCAPED_UNICODE);
+        Log::record($log);
+        if ($params) {
+            try {
+                validate(\app\api\validate\content\Feed::class)->scene('edit')->check($params);
+            } catch (ValidateException $e) {
+                $this->error($e->getMessage());
+            }
+            $params['uid'] = $uid; 
+            $geohash = new Geohash();
+            $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
+            //修改内容主体信息
+            $result = $content->allowField(['content', 'address','contacts','lat','lng','mobile','pictures'])
+                        ->save($params);
+            if ($result === false) {
+                $this->error($this->model->getError());
+            }
+            $this->success('ok');
+        }
+        $this->error();
+    }
+
     /**
      * 付费刷新文章
      *
@@ -211,6 +256,9 @@ class Feed extends Api
     {
         $params = $this->request->post();
         $cid = $params['id'] ?? 0;
+        if (empty($cid)) {
+            $this->error('内容不存在');
+        }
         $content = $this->model->field('id,uid,column_ids')->where('id', $cid)->find();
         if (empty($content)) {
             $this->error('内容不存在');
@@ -277,7 +325,7 @@ class Feed extends Api
             $this->error('关联栏目不存在或已下架');
         }
 
-        $topInfo = TopConfig::find($params['top_id']); 
+        $topInfo = TopConfig::find($params['top_id']);
         $data['orderAmount'] =  $topInfo['price'];
         $data['uid'] = $this->auth->uid;
         $data['top_id'] = $topId;

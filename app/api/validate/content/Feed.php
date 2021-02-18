@@ -49,7 +49,7 @@ class Feed extends Validate
      */
     protected $scene = [
         'add'  => ['mobile', 'column_id', 'contacts', 'address', 'content'],
-        'edit' => ['mobile', 'column_id', 'contacts', 'address', 'content'],
+        'edit' => ['mobile', 'contacts', 'address', 'content'],
     ];
 
     public function __construct()

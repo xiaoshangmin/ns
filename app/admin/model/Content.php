@@ -291,4 +291,9 @@ class Content extends BaseModel
         $value = $value ? $value : (isset($data['delete_time']) ? $data['delete_time'] : '');
         return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
     }
+
+    public function wxuser()
+    {
+        return $this->belongsTo('Wxuser', 'uid');
+    }
 }

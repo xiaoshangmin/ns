@@ -49,7 +49,7 @@ class Content extends BaseModel
         foreach ($value as $pic) {
             $pictures[] = [
                 'key' => $pic['key'],
-                'imageInfo' => $pic['imageInfo']
+                'imageInfo' => $pic['imageInfo'] ?? []
             ];
         }
         return json_encode($pictures, JSON_UNESCAPED_UNICODE);
@@ -323,6 +323,7 @@ class Content extends BaseModel
                     $pic['thumbnailUrl'] = "{$url}?imageMogr2/auto-orient/thumbnail/300x2000%3E/quality/70/interlace/1";
                     $pic['smallPicUrl'] = "{$url}?imageMogr2/auto-orient/thumbnail/400x2000%3E/quality/70/interlace/1";
                     $pic['middlePicUrl'] = "{$url}?imageMogr2/auto-orient/thumbnail/1500x2000%3E/quality/70/interlace/1";
+                    $pic['imageInfo'] = $pic['imageInfo'] ?? [];
                 }
             }
             if (isset($data['create_time']) && !empty($data['create_time'])) {
