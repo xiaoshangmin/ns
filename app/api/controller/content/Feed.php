@@ -175,6 +175,7 @@ class Feed extends Api
                 $orderAmount = bcadd($orderAmount, $topInfo['price'],2);
             }
             $params['orderAmount'] = $orderAmount;
+            $params['order_type'] = Orders::ORDER_TYPE_SUBMIT;
             //新增订单
             if ($orderAmount && $this->_need_pay) {
                 $order = new Orders();
