@@ -39,6 +39,7 @@ class Content extends BaseModel
         $expiryTime = (new TopConfig())->getExpiryTimeById($topId);
         if ($expiryTime) {
             $this->addExpiryTime($cid, $expiryTime);
+            $this->changeTopStatus($cid, 1);
         }
     }
 
@@ -382,6 +383,26 @@ class Content extends BaseModel
         ]);
         ColumnContent::where('cid', $cid)->save([
             'pay_status' => $status,
+        ]);
+    }
+
+    /**
+     * 改变内容置顶状态
+     *
+     * @param integer $cid
+     * @param integer $status
+     * @return void
+     * @author xsm
+     * @since 2020-09-20
+     */
+    public function changeTopStatus(int $cid, int $status)
+    {
+        $this->where('id', $cid)->save([
+            'top' => $status,
+            'update_time' => time(),
+        ]);
+        ColumnContent::where('cid', $cid)->save([
+            'top' => $status,
         ]);
     }
 
