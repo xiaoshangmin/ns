@@ -45,6 +45,9 @@ class TopConfig extends BaseModel
      */
     public function getExpiryTimeById(int $topId): int
     {
+        if (!$topId) {
+            return 0;
+        }
         $topConfig = $this->where('id', $topId)->find();
         if ($topConfig) {
             if (1 == $topConfig['type']) {

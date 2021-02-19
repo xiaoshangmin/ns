@@ -34,11 +34,10 @@ class Content extends BaseModel
         }
     }
 
-    public function updateExpiryTimeByCid(int $cid)
+    public function updateExpiryTimeByCid(int $cid, int $topId)
     {
-        $content = $this->where('id', $cid)->find();
-        if (!is_null($content)) {
-            $expiryTime = (new TopConfig())->getExpiryTimeById($content->top_id);
+        $expiryTime = (new TopConfig())->getExpiryTimeById($topId);
+        if ($expiryTime) {
             $this->addExpiryTime($cid, $expiryTime);
         }
     }
@@ -378,10 +377,11 @@ class Content extends BaseModel
     public function changePayStatus(int $cid, int $status)
     {
         $this->where('id', $cid)->save([
-            'pay_status' => $status
+            'pay_status' => $status,
+            'update_time' => time(),
         ]);
         ColumnContent::where('cid', $cid)->save([
-            'pay_status' => $status
+            'pay_status' => $status,
         ]);
     }
 

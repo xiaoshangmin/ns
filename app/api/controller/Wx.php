@@ -57,7 +57,7 @@ class Wx extends Api
                     $order->status = Orders::PAY_SUCCESS;
                     (new Content())->changePayStatus($order->cid,Orders::PAY_SUCCESS);
                     if($order->order_type == Orders::ORDER_TYPE_TOP){
-                        (new Content())->updateExpiryTimeByCid($order->cid);
+                        (new Content())->updateExpiryTimeByCid($order->cid,$order->top_id);
                     }
                     // 用户支付失败
                 } elseif ($message['result_code'] === 'FAIL') {
