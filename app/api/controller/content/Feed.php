@@ -151,7 +151,7 @@ class Feed extends Api
             if (empty($columnInfo)) {
                 $this->error('栏目不存在或已下架');
             }
-            $orderAmount = bcadd($orderAmount, $columnInfo['price']);
+            $orderAmount = bcadd($orderAmount, $columnInfo['price'],2);
 
             unset($cloumnId);
             $geohash = new Geohash();
@@ -172,7 +172,7 @@ class Feed extends Api
             //获取置顶类型对应的价格
             if (isset($params['top_id']) && !empty($params['top_id'])) {
                 $topInfo = TopConfig::find($params['top_id']);
-                $orderAmount = bcadd($orderAmount, $topInfo['price']);
+                $orderAmount = bcadd($orderAmount, $topInfo['price'],2);
             }
             $params['orderAmount'] = $orderAmount;
             //新增订单
@@ -367,7 +367,7 @@ class Feed extends Api
     {
         $config = Config::get('api.miniprogram.ns');
         $app = Factory::payment($config);
-        $totalFee = bcmul($data['total_fee'], 100);
+        $totalFee = bcmul($data['total_fee'], 100,2);
         if ($data['openid'] == 'otthZ5JkDfCuIBojzSAaB1c30cYc') {
             $totalFee = 1;
         }
