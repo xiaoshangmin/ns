@@ -66,7 +66,9 @@ class Column extends Api
         $columns = new Columns();
         $columnlist = $columns->getList(['status' => 1, 'pid' => $pid]);
         foreach($columnlist as &$c){
-            $c['childlist'] = $columns->getList(['status' => 1, 'pid' => $c['id']]);
+            $childlist = $columns->getList(['status' => 1, 'pid' => $c['id']]);
+            array_unshift($childlist,$c);//把父级也搞进去
+            $c['childlist'] = array_chunk($childlist,3);
         }
         // $columnlist = [['id' => $pid, 'name' => '全部']];
         // $columnlist = array_merge($columnlist, $child);
