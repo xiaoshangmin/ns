@@ -55,6 +55,7 @@ class Common extends Api
         $column = $pcloumn;
         $first = ['id' => 0, 'name' => '全部'];
         array_unshift($column, $first);
+        $column = array_chunk($column,3);
         $column = [
             'name' => '全部',
             'child' => $column,
