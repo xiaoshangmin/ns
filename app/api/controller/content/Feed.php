@@ -174,10 +174,10 @@ class Feed extends Api
                 $topInfo = TopConfig::find($params['top_id']);
                 $orderAmount = bcadd($orderAmount, $topInfo['price'],2);
             }
-            $params['orderAmount'] = $orderAmount;
+            $params['orderAmount'] = floatval($orderAmount);
             $params['order_type'] = Orders::ORDER_TYPE_SUBMIT;
             //新增订单
-            if ($orderAmount && $this->_need_pay) {
+            if ($params['orderAmount'] && $this->_need_pay) {
                 $order = new Orders();
                 $ret = $order->add($params);
                 //生成预支付信息
