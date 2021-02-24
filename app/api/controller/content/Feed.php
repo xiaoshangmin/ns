@@ -289,7 +289,7 @@ class Feed extends Api
                 'openid' => $this->auth->openid,
                 'total_fee' => $ret->order_amount,
             ]);
-            $log = 'getPrepayInfo:' . json_encode($result, JSON_UNESCAPED_UNICODE);
+            $log = __FUNCTION__ .':getPrepayInfo:' . json_encode($result, JSON_UNESCAPED_UNICODE);
             Log::record($log);
             if ($result) {
                 $this->success('ok', $result, 1000);
@@ -368,7 +368,7 @@ class Feed extends Api
     {
         $config = Config::get('api.miniprogram.ns');
         $app = Factory::payment($config);
-        $totalFee = bcmul($data['total_fee'], 100,2);
+        $totalFee = bcmul($data['total_fee'], 100);
         if ($data['openid'] == 'otthZ5JkDfCuIBojzSAaB1c30cYc') {
             $totalFee = 1;
         }
@@ -379,6 +379,8 @@ class Feed extends Api
             'trade_type' => 'JSAPI',
             'openid' => $data['openid'],
         ]);
+        $log = __FUNCTION__ .':getPrepayInfo:' . json_encode($result, JSON_UNESCAPED_UNICODE);
+        Log::record($log);
         if (
             isset($result['return_code']) && 'SUCCESS' == $result['return_code']
             && isset($result['result_code']) && 'SUCCESS' == $result['result_code']
