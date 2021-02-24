@@ -147,11 +147,12 @@ class Feed extends Api
             $orderAmount = 0;
             //获取栏目 
             $cloumns = explode(',', $params['column_ids']);
-            $columnInfo = Columns::find($cloumns[0]);
+            $cloumnId = array_pop($cloumns);
+            $columnInfo = Columns::find($cloumnId);
             if (empty($columnInfo)) {
                 $this->error('栏目不存在或已下架');
             }
-            $orderAmount = bcadd($orderAmount, $columnInfo['price'],2);
+            $orderAmount = bcadd($orderAmount, $columnInfo['price'], 2);
 
             unset($cloumnId);
             $geohash = new Geohash();
@@ -172,7 +173,7 @@ class Feed extends Api
             //获取置顶类型对应的价格
             if (isset($params['top_id']) && !empty($params['top_id'])) {
                 $topInfo = TopConfig::find($params['top_id']);
-                $orderAmount = bcadd($orderAmount, $topInfo['price'],2);
+                $orderAmount = bcadd($orderAmount, $topInfo['price'], 2);
             }
             $params['orderAmount'] = floatval($orderAmount);
             $params['order_type'] = Orders::ORDER_TYPE_SUBMIT;
@@ -232,12 +233,12 @@ class Feed extends Api
             } catch (ValidateException $e) {
                 $this->error($e->getMessage());
             }
-            $params['uid'] = $uid; 
+            $params['uid'] = $uid;
             $geohash = new Geohash();
             $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
             //修改内容主体信息
-            $result = $content->allowField(['content', 'address','contacts','lat','lng','mobile','pictures'])
-                        ->save($params);
+            $result = $content->allowField(['content', 'address', 'contacts', 'lat', 'lng', 'mobile', 'pictures'])
+                ->save($params);
             if ($result === false) {
                 $this->error($this->model->getError());
             }
@@ -289,7 +290,7 @@ class Feed extends Api
                 'openid' => $this->auth->openid,
                 'total_fee' => $ret->order_amount,
             ]);
-            $log = __FUNCTION__ .':getPrepayInfo:' . json_encode($result, JSON_UNESCAPED_UNICODE);
+            $log = __FUNCTION__ . ':getPrepayInfo:' . json_encode($result, JSON_UNESCAPED_UNICODE);
             Log::record($log);
             if ($result) {
                 $this->success('ok', $result, 1000);
@@ -379,7 +380,7 @@ class Feed extends Api
             'trade_type' => 'JSAPI',
             'openid' => $data['openid'],
         ]);
-        $log = __FUNCTION__ .':getPrepayInfo:' . json_encode($result, JSON_UNESCAPED_UNICODE);
+        $log = __FUNCTION__ . ':getPrepayInfo:' . json_encode($result, JSON_UNESCAPED_UNICODE);
         Log::record($log);
         if (
             isset($result['return_code']) && 'SUCCESS' == $result['return_code']

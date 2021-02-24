@@ -25,7 +25,7 @@ class Column extends Api
      * @author xsm
      * @since 2020-09-19
      */
-    public function list()
+    public function multList()
     {
         // $key = "mini:column:list";
         // $redis = Cache::store('redis')->handler();
@@ -37,7 +37,7 @@ class Column extends Api
         $columns = new Columns();
         $pcloumn = $columns->getList(['status' => 1, 'pid' => 0]);
         $child = [];
-        //多级栏目 
+        //二级栏目 
         foreach ($pcloumn as &$val) {
             $child[$val['id']] = $columns->getList(['status' => 1, 'pid' => $val['id']]);
         }
@@ -46,8 +46,10 @@ class Column extends Api
         $this->success('ok', $data);
     }
 
+
+
     /**
-     * 子栏目
+     * 全部子栏目
      *
      * @return void
      * @author xsm
@@ -65,16 +67,26 @@ class Column extends Api
         //一级栏目
         $columns = new Columns();
         $columnlist = $columns->getList(['status' => 1, 'pid' => $pid]);
-        foreach($columnlist as &$c){
+        foreach ($columnlist as &$c) {
             $childlist = $columns->getList(['status' => 1, 'pid' => $c['id']]);
             $p = $c;
             $p['name'] = '全部';
-            array_unshift($childlist,$p);//把父级也搞进去
-            $c['childlist'] = array_chunk($childlist,3);
+            array_unshift($childlist, $p); //把父级也搞进去
+            $c['childlist'] = array_chunk($childlist, 3);
         }
         // $columnlist = [['id' => $pid, 'name' => '全部']];
         // $columnlist = array_merge($columnlist, $child);
         // $redis->set($key,json_encode($columnlist,JSON_UNESCAPED_UNICODE),['ex'=>300]);
         $this->success('ok',  $columnlist);
+    }
+
+    public function list()
+    {
+        $pid = $this->request->post('pid/d') ?: 0;
+        $columns = new Columns();
+        $list = $columns->getList(['status' => 1, 'pid' => $pid]);
+        $hasTree = $list ? (3 == $list[0]['level'] ?: false) : false;
+        $data = ['list' => $list, 'hasTree' => $hasTree];
+        $this->success('ok', $data);
     }
 }

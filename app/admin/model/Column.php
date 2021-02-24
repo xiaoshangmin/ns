@@ -32,8 +32,6 @@ class Column extends BaseModel
         'status_text'
     ];
 
-
-
     public function getStatusList()
     {
         return ['0' => __('Status 0'), '1' => __('Status 1')];
@@ -161,6 +159,16 @@ class Column extends BaseModel
     protected function setDeleteTimeAttr($value)
     {
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
+    }
+
+    public function setLevelAttr($value,$data)
+    {
+        $level = 1;
+        if($data['pid']){
+            $plevel = $this->where('id',intval($data['pid']))->value('level');
+            $level = intval($plevel) + 1;
+        }
+        return $level;
     }
 
     protected function setPriceAttr($value, $data)

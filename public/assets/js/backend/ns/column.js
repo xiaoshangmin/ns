@@ -128,15 +128,15 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
             bindevent: function () {
                 Form.api.bindevent($("form[role=form]"));
                 
-                $('#pid').change(function(){
-                    if($(this).val() > 0){
-                        $('#price').hide();
-                        $('#refresh_price').hide();
-                    }else{
-                        $('#price').show();
-                        $('#refresh_price').show();
-                    }
-                })
+                // $('#pid').change(function(){
+                //     if($(this).val() > 0){
+                //         $('#price').hide();
+                //         $('#refresh_price').hide();
+                //     }else{
+                //         $('#price').show();
+                //         $('#refresh_price').show();
+                //     }
+                // })
             }
         }
     };

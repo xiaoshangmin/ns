@@ -31,7 +31,7 @@ class Columns extends BaseModel
         if (isset($condition['ids']) && !empty($condition['ids'])) {
             $where[] = ['id', 'IN', join(',', $condition['ids'])];
         }
-        $list = $this->field('id,icon,price,template,refresh_price,name,create_time')
+        $list = $this->field('id,icon,price,template,refresh_price,name,level,create_time')
             ->where($where)->order('sort', 'desc')->select()->toArray();
         return $list;
     }
