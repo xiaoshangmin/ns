@@ -3,6 +3,7 @@
 namespace app\api\validate\content;
 
 use think\Validate;
+use app\common\model\Content;
 
 class Comment extends Validate
 {
@@ -10,7 +11,7 @@ class Comment extends Validate
      * 验证规则.
      */
     protected $rule = [
-        'content' => 'require',
+        'content' => 'require|msgSecCheck:content',
         'cid' => 'require',
     ];
 
@@ -26,6 +27,15 @@ class Comment extends Validate
      * 字段描述.
      */
     protected $field = [];
+
+    protected function msgSecCheck($value, $rule, $data = [])
+    {
+        $data = (new Content())->msgSecCheck($value);
+        if ($data['code']) {
+            return $data['msg'];
+        }
+        return true;
+    }
 
     /**
      * 验证场景.

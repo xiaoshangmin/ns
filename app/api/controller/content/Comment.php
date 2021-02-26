@@ -33,8 +33,7 @@ class Comment extends Api
     {
         $params = $this->request->post();
         $page = $this->request->post('p/d') ?: 1;
-        $pageSize = $this->request->post('ps/d') ?: 10;
-        $cid = $this->request->post('cid/d') ?: 0;
+        $pageSize = $this->request->post('ps/d') ?: 10; 
         $list = $this->model->getList($params, $page, $pageSize);
         $this->success('ok', ['list' => $list]);
     }
