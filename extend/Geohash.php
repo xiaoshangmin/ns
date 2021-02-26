@@ -8,7 +8,7 @@ class Geohash
     private $coding = "0123456789bcdefghjkmnpqrstuvwxyz";
     private $codingMap = array();
 
-    public function Geohash()
+    public function __construct()
     {
         for ($i = 0; $i < 32; $i++) {
             $this->codingMap[substr($this->coding, $i, 1)] = str_pad(decbin($i), 5, "0", STR_PAD_LEFT);

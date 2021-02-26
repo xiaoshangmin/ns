@@ -122,7 +122,7 @@ class Feed extends Api
         }
         //加锁
         $uid = $this->auth->uid;
-        if (false === lock("submit:{$uid}", 10)) {
+        if (false === lock("submit:{$uid}", 5)) {
             $this->error('操作过于频繁,请稍候再试');
         }
         $params = $this->request->post();
@@ -145,18 +145,16 @@ class Feed extends Api
             $params['uid'] = $uid;
             //订单总金额
             $orderAmount = 0;
-            //获取栏目 
-            $cloumns = explode(',', $params['column_ids']);
-            $cloumnId = array_pop($cloumns);
+            //获取最后一个栏目
+            $postCloumnIds = explode(',', $params['column_ids']);
+            $columnIds = $postCloumnIds;
+            $cloumnId = array_pop($columnIds);
             $columnInfo = Columns::find($cloumnId);
-            if (empty($columnInfo)) {
-                $this->error('栏目不存在或已下架');
-            }
             $orderAmount = bcadd($orderAmount, $columnInfo['price'], 2);
 
             unset($cloumnId);
-            $geohash = new Geohash();
-            $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
+            // $geohash = new Geohash();
+            // $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
             //保存内容主体信息
             $result = $this->model->save($params);
             if ($result === false) {
@@ -164,8 +162,10 @@ class Feed extends Api
             }
             $params['cid'] = $this->model->id;
             //栏目关联内容
-            foreach ($cloumns as $cloumnId) {
-                (new ColumnContent())->addRelateContent($cloumnId, $params['cid'], [
+            $columnContent = new ColumnContent();
+            print_r($postCloumnIds);exit;
+            foreach ($postCloumnIds as $cloumnId) {
+                $columnContent->addRelateContent($cloumnId, $params['cid'], [
                     'top' => $this->model->top,
                     'expiry_time' => $this->model->expiry_time,
                 ]);
@@ -234,8 +234,8 @@ class Feed extends Api
                 $this->error($e->getMessage());
             }
             $params['uid'] = $uid;
-            $geohash = new Geohash();
-            $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
+            // $geohash = new Geohash();
+            // $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
             //修改内容主体信息
             $result = $content->allowField(['content', 'address', 'contacts', 'lat', 'lng', 'mobile', 'pictures'])
                 ->save($params);
@@ -268,22 +268,23 @@ class Feed extends Api
         if ($content['uid'] != $this->auth->uid) {
             $this->error('禁止操作');
         }
-        $cloumns = explode(',', $content['column_ids']);
-        $columnInfo = Columns::find($cloumns[0]);
+        $postCloumnIds = explode(',', $params['column_ids']);
+        $columnIds = $postCloumnIds;
+        $cloumnId = array_pop($columnIds);
+        $columnInfo = Columns::find($cloumnId); 
         if (empty($columnInfo)) {
             $this->error('关联栏目不存在或已下架');
         }
-        $data['orderAmount'] = $columnInfo['refresh_price'];
-        $data['uid'] = $this->auth->uid;
-        $data['top_id'] = 0;
-        $data['order_type'] = Orders::ORDER_TYPE_REFRESH;
-        $data['cid'] = $content['id'];
-        $log = 'refresh:' . json_encode($data, JSON_UNESCAPED_UNICODE);
+        $order['orderAmount'] = $columnInfo['refresh_price'];
+        $order['uid'] = $this->auth->uid;
+        $order['top_id'] = 0;
+        $order['order_type'] = Orders::ORDER_TYPE_REFRESH;
+        $order['cid'] = $content['id'];
+        $log = 'refresh:' . json_encode($order, JSON_UNESCAPED_UNICODE);
         Log::record($log);
         //新增订单
-        if ($data['orderAmount']) {
-            $order = new Orders();
-            $ret = $order->add($data);
+        if ($order['orderAmount']) {
+            $ret = (new Orders())->add($order);
             //生成预支付信息
             $result = $this->getPrepayInfo([
                 'out_trade_no' => $ret->order_sn,
@@ -297,7 +298,7 @@ class Feed extends Api
             }
         } else {
             //免费发布
-            $this->model->changePayStatus($data['cid'], Orders::PAY_SUCCESS);
+            $this->model->changePayStatus($order['cid'], Orders::PAY_SUCCESS);
         }
         $this->success('ok');
     }
@@ -321,24 +322,25 @@ class Feed extends Api
         if ($content['uid'] != $this->auth->uid) {
             $this->error('禁止操作');
         }
-        $cloumns = explode(',', $content['column_ids']);
-        $columnInfo = Columns::find($cloumns[0]);
+        $postCloumnIds = explode(',', $params['column_ids']);
+        $columnIds = $postCloumnIds;
+        $cloumnId = array_pop($columnIds);
+        $columnInfo = Columns::find($cloumnId); 
         if (empty($columnInfo)) {
             $this->error('关联栏目不存在或已下架');
         }
 
         $topInfo = TopConfig::find($params['top_id']);
-        $data['orderAmount'] =  $topInfo['price'];
-        $data['uid'] = $this->auth->uid;
-        $data['top_id'] = $topId;
-        $data['order_type'] = Orders::ORDER_TYPE_TOP;
-        $data['cid'] = $content['id'];
-        $log = 'top:' . json_encode($data, JSON_UNESCAPED_UNICODE);
+        $order['orderAmount'] =  $topInfo['price'];
+        $order['uid'] = $this->auth->uid;
+        $order['top_id'] = $topId;
+        $order['order_type'] = Orders::ORDER_TYPE_TOP;
+        $order['cid'] = $content['id'];
+        $log = 'top:' . json_encode($order, JSON_UNESCAPED_UNICODE);
         Log::record($log);
         //新增订单
-        if ($data['orderAmount']) {
-            $order = new Orders();
-            $ret = $order->add($data);
+        if ($order['orderAmount']) {
+            $ret = (new Orders())->add($order);
             //生成预支付信息
             $result = $this->getPrepayInfo([
                 'out_trade_no' => $ret->order_sn,
@@ -352,7 +354,7 @@ class Feed extends Api
             }
         } else {
             //免费发布
-            $this->model->changePayStatus($data['cid'], Orders::PAY_SUCCESS);
+            $this->model->changePayStatus($order['cid'], Orders::PAY_SUCCESS);
         }
         $this->success('ok');
     }

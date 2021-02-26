@@ -22,7 +22,7 @@ class Notice extends Backend
     {
         parent::_initialize();
         $this->model = new \app\admin\model\Notice;
-        $this->view->assign("statusList", $this->model->getStatusList());
+        $this->view->assign("statusList", $this->model->getStatusList()); 
         $this->view->assign("typeList", $this->model->getTypeList());
     }
     

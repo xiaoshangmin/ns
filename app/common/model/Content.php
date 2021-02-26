@@ -6,6 +6,7 @@ use think\model\concern\SoftDelete;
 use GuzzleHttp\Client;
 use EasyWeChat\Factory;
 use think\facade\{Config, Log};
+use Geohash;
 
 /**
  * 内容模型.
@@ -32,6 +33,12 @@ class Content extends BaseModel
             $model->expiry_time = (new TopConfig())->getExpiryTimeById($model->top_id);
             $model->top = 1;
         }
+        $model->geohash = (new Geohash())->encode($model->lat, $model->lng);
+    }
+
+    public static function onBeforeUpdate($model)
+    { 
+        $model->geohash = (new Geohash())->encode($model->lat, $model->lng);
     }
 
     public function updateExpiryTimeByCid(int $cid, int $topId)

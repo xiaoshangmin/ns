@@ -3,7 +3,7 @@
 namespace app\api\validate\content;
 
 use think\Validate;
-use app\common\model\Content;
+use app\common\model\{Content, Columns};
 
 class Feed extends Validate
 {
@@ -12,7 +12,7 @@ class Feed extends Validate
      */
     protected $rule = [
         'mobile' => 'require|regex:1\d{10}$',
-        'column_ids' => 'require',
+        'column_ids' => 'require|checkColumnIds',
         'contacts' => 'require',
         'address'    => 'require',
         'content'  => 'msgSecCheck:content'
@@ -43,6 +43,20 @@ class Feed extends Validate
         return true;
     }
 
+    protected function checkColumnIds($value, $rule, $data = [])
+    {
+        //获取栏目 
+        $cloumnIds = explode(',', $data['column_ids']);
+        $cloumnId = array_pop($cloumnIds);
+        $columnInfo = Columns::find($cloumnId);
+        if (empty($columnInfo)) {
+            return '栏目不存在或已下架';
+        }
+        if ($data['has_three'] && 3 != $columnInfo['level']) {
+            return '请选择地区';
+        }
+        return true;
+    }
 
     /**
      * 验证场景.

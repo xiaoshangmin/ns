@@ -86,7 +86,7 @@ class Column extends Api
         $columns = new Columns();
         $list = $columns->getList(['status' => 1, 'pid' => $pid]);
         $hasTree = $list ? (3 == $list[0]['level'] ?: false) : false;
-        $data = ['list' => $list, 'hasTree' => $hasTree];
+        $data = ['list' => $list, 'hasThree' => $hasTree];
         $this->success('ok', $data);
     }
 }
