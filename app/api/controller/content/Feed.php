@@ -163,7 +163,6 @@ class Feed extends Api
             $params['cid'] = $this->model->id;
             //栏目关联内容
             $columnContent = new ColumnContent();
-            print_r($postCloumnIds);exit;
             foreach ($postCloumnIds as $cloumnId) {
                 $columnContent->addRelateContent($cloumnId, $params['cid'], [
                     'top' => $this->model->top,
