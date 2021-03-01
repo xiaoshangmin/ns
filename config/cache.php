@@ -29,7 +29,8 @@ return [
         // 更多的缓存连接
         'redis' => [
             'type' => 'redis',
-            'host' => 'redis'
+            'host' => 'redis',
+            'password' => 'rj1kWv$bC2',
         ]
     ],
 ];
