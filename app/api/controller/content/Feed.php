@@ -153,8 +153,6 @@ class Feed extends Api
             $orderAmount = bcadd($orderAmount, $columnInfo['price'], 2);
 
             unset($cloumnId);
-            // $geohash = new Geohash();
-            // $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
             //保存内容主体信息
             $result = $this->model->save($params);
             if ($result === false) {
@@ -162,9 +160,8 @@ class Feed extends Api
             }
             $params['cid'] = $this->model->id;
             //栏目关联内容
-            $columnContent = new ColumnContent();
             foreach ($postCloumnIds as $cloumnId) {
-                $columnContent->addRelateContent($cloumnId, $params['cid'], [
+                (new ColumnContent())->addRelateContent($cloumnId, $params['cid'], [
                     'top' => $this->model->top,
                     'expiry_time' => $this->model->expiry_time,
                 ]);
@@ -232,9 +229,7 @@ class Feed extends Api
             } catch (ValidateException $e) {
                 $this->error($e->getMessage());
             }
-            $params['uid'] = $uid;
-            // $geohash = new Geohash();
-            // $params['geohash'] = $geohash->encode($params['lat'], $params['lng']);
+            $params['uid'] = $uid; 
             //修改内容主体信息
             $result = $content->allowField(['content', 'address', 'contacts', 'lat', 'lng', 'mobile', 'pictures'])
                 ->save($params);
@@ -270,7 +265,7 @@ class Feed extends Api
         $postCloumnIds = explode(',', $params['column_ids']);
         $columnIds = $postCloumnIds;
         $cloumnId = array_pop($columnIds);
-        $columnInfo = Columns::find($cloumnId); 
+        $columnInfo = Columns::find($cloumnId);
         if (empty($columnInfo)) {
             $this->error('关联栏目不存在或已下架');
         }
@@ -324,7 +319,7 @@ class Feed extends Api
         $postCloumnIds = explode(',', $params['column_ids']);
         $columnIds = $postCloumnIds;
         $cloumnId = array_pop($columnIds);
-        $columnInfo = Columns::find($cloumnId); 
+        $columnInfo = Columns::find($cloumnId);
         if (empty($columnInfo)) {
             $this->error('关联栏目不存在或已下架');
         }
