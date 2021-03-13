@@ -24,6 +24,11 @@ class Content extends BaseModel
     protected $deleteTime = 'delete_time';
     protected $defaultSoftDelete = 0;
 
+    protected $allowField = [
+        'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
+        'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'update_time','expiry_time', 'extra'
+    ];
+
     public static function onBeforeInsert($model)
     {
         //置顶&计算置顶时间
@@ -70,10 +75,7 @@ class Content extends BaseModel
 
     public function getBaseById(int $cid): array
     {
-        $detail = $this->field([
-            'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time', 'extra'
-        ])->where('id', $cid)->find(); //->where('status', 1)
+        $detail = $this->field($this->allowField)->where('id', $cid)->find(); //->where('status', 1)
         if (empty($detail)) {
             return [];
         }
@@ -218,10 +220,7 @@ class Content extends BaseModel
             return [];
         }
         $cids = join(',', $cids);
-        $lists = $this->field([
-            'id', 'uid', 'content', 'contacts', 'pictures', 'like_count', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'top', 'create_time', 'expiry_time'
-        ])->where('id', 'in', $cids)
+        $lists = $this->field($this->allowField)->where('id', 'in', $cids)
             ->order('top', 'desc')
             ->order('update_time', 'desc')
             ->select()->toArray();
@@ -293,10 +292,7 @@ class Content extends BaseModel
             $where[] = $condition['geohash'];
         }
         $offset = ($page - 1) * $pageSize;
-        $lists = $this->field([
-            'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'create_time','update_time','top', 'expiry_time'
-        ])->where($where)->order($order)->limit($offset, $pageSize)
+        $lists = $this->field($this->allowField)->where($where)->order($order)->limit($offset, $pageSize)
             ->select()->toArray();
         if (empty($lists)) {
             return [];
