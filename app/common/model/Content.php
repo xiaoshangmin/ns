@@ -336,6 +336,9 @@ class Content extends BaseModel
             if (isset($data['create_time']) && !empty($data['create_time'])) {
                 $data['create_time_text'] = date('Y-m-d H:i', $data['create_time']);
             }
+            if (isset($data['update_time']) && !empty($data['update_time'])) {
+                $data['update_time_text'] = date('Y-m-d H:i', $data['update_time']);
+            }
             $data['tags'] = [];
             if (isset($data['top']) && $data['top'] && $data['expiry_time'] > time()) {
                 $data['tags'][] = '置顶';
