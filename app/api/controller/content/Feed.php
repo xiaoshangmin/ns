@@ -269,7 +269,7 @@ class Feed extends Api
         if (empty($columnInfo)) {
             $this->error('关联栏目不存在或已下架');
         }
-        $order['orderAmount'] = $columnInfo['refresh_price'];
+        $order['orderAmount'] = floatval($columnInfo['refresh_price']);
         $order['uid'] = $this->auth->uid;
         $order['top_id'] = 0;
         $order['order_type'] = Orders::ORDER_TYPE_REFRESH;
@@ -325,7 +325,7 @@ class Feed extends Api
         }
 
         $topInfo = TopConfig::find($params['top_id']);
-        $order['orderAmount'] =  $topInfo['price'];
+        $order['orderAmount'] =  floatval($topInfo['price']);
         $order['uid'] = $this->auth->uid;
         $order['top_id'] = $topId;
         $order['order_type'] = Orders::ORDER_TYPE_TOP;
