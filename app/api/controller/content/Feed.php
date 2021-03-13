@@ -262,7 +262,7 @@ class Feed extends Api
         if ($content['uid'] != $this->auth->uid) {
             $this->error('禁止操作');
         }
-        $postCloumnIds = explode(',', $params['column_ids']);
+        $postCloumnIds = explode(',', $content['column_ids']);
         $columnIds = $postCloumnIds;
         $cloumnId = array_pop($columnIds);
         $columnInfo = Columns::find($cloumnId);
@@ -316,7 +316,7 @@ class Feed extends Api
         if ($content['uid'] != $this->auth->uid) {
             $this->error('禁止操作');
         }
-        $postCloumnIds = explode(',', $params['column_ids']);
+        $postCloumnIds = explode(',', $content['column_ids']);
         $columnIds = $postCloumnIds;
         $cloumnId = array_pop($columnIds);
         $columnInfo = Columns::find($cloumnId);
