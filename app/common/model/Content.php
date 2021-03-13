@@ -295,7 +295,7 @@ class Content extends BaseModel
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
             'id', 'uid', 'content', 'pictures', 'like_count', 'contacts', 'mobile', 'share_count', 'comment_count',
-            'view_count', 'address', 'lng', 'lat', 'create_time', 'top', 'expiry_time'
+            'view_count', 'address', 'lng', 'lat', 'create_time','update_time','top', 'expiry_time'
         ])->where($where)->order($order)->limit($offset, $pageSize)
             ->select()->toArray();
         if (empty($lists)) {
