@@ -107,10 +107,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
         },
         edit: function () {
             Controller.api.bindevent();
-            if($('#pid').val() > 0){
-                $('#price').hide();
-                $('#refresh_price').hide();
-            }
+            // if($('#pid').val() > 0){
+            //     $('#price').hide();
+            //     $('#refresh_price').hide();
+            // }
         },
         api: {
             formatter: {

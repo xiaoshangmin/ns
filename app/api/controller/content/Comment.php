@@ -70,7 +70,7 @@ class Comment extends Api
                 $this->error('评论的内容不存在');
             }
             $params['uid'] = $this->auth->uid;
-            $params['to_uid'] = $content['uid'];
+            $params['to_uid'] = intval($params['to']);
             $result = $this->model->save($params);
             if ($result === false) {
                 $this->error($this->model->getError());

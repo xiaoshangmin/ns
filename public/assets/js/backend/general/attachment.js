@@ -18,6 +18,13 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
 
             // 初始化表格
             table.bootstrapTable({
+                search:false,
+                showToggle: false,
+                showColumns: false,
+                searchFormVisible: true,
+                commonSearch: false,
+                escape: false,
+                showExport: false,
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 sortName: 'id',
                 columns: [
