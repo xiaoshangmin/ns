@@ -56,6 +56,7 @@ class User extends Api
                 'province' => $decryptedData['province'],
                 'city' => $decryptedData['city'],
                 'headimgurl' => $decryptedData['avatarUrl'],
+                'delete_time' => 0,//后台删除后再恢复
             ];
             Wxuser::update($update, ['uid' => $user['uid']]);
         }

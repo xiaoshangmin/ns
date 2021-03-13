@@ -92,7 +92,7 @@ class Wx extends Api
                 }
                 //如果已经有账号则直接登录
                 $user->session_key = $wxuser['session_key'];
-                $user->delete_time = 0;//后台删除后再恢复
+                // $user->delete_time = 0;//后台删除后再恢复
                 $user->save();
                 $this->auth->wxdirect($user->uid);
             } else {
