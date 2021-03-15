@@ -77,6 +77,10 @@ class Feed extends Api
         //ALTER TABLE ns_content ADD FULLTEXT INDEX ft_index (content) WITH PARSER ngram;
         $cid = $this->request->get('cid/d');
         $detail = $this->model->getById($cid, $this->auth->uid ?: 0);
+        $shareTitle = isset($detail['tags'][1]) ?$detail['tags'][1]:$detail['tags'][0];
+        $content = mb_substr($detail['content'],0,50);
+        $shareTitle = "【{$shareTitle}】{$content}";
+        $detail['shareTitle'] = $shareTitle;
         //管理员可见内容
         $adminUids = Env::get('admin.uid', 0);
         $adminUids = explode(',', $adminUids);
