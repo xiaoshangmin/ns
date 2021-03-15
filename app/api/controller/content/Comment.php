@@ -33,7 +33,7 @@ class Comment extends Api
     {
         $params = $this->request->post();
         $page = $this->request->post('p/d') ?: 1;
-        $pageSize = $this->request->post('ps/d') ?: 10; 
+        $pageSize = $this->request->post('ps/d') ?: 10;
         $list = $this->model->getList($params, $page, $pageSize);
         $this->success('ok', ['list' => $list]);
     }
@@ -54,8 +54,7 @@ class Comment extends Api
      */
     public function submit()
     {
-        if(true === $this->auth->isBlock())
-        {
+        if (true === $this->auth->isBlock()) {
             $this->error('此账号已被封号');
         }
         $params = $this->request->post();
@@ -70,7 +69,7 @@ class Comment extends Api
                 $this->error('评论的内容不存在');
             }
             $params['uid'] = $this->auth->uid;
-            $params['to_uid'] = intval($params['to']);
+            $params['to_uid'] = empty($params['pid']) ? $content['uid'] : intval($params['to']);
             $result = $this->model->save($params);
             if ($result === false) {
                 $this->error($this->model->getError());

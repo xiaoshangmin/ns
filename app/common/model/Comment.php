@@ -32,9 +32,9 @@ class Comment extends BaseModel
     {
         $where = [
             ['to_uid', '=', $uid],
-            ['uid', '<>', $uid], 
+            ['uid', '<>', $uid],
             ['delete_time', '=', '0'],
-            ['is_online','=',1]
+            ['is_online', '=', 1]
         ];
         $offset = ($page - 1) * $pageSize;
         $lists = $this->field([
@@ -67,7 +67,11 @@ class Comment extends BaseModel
         }
         $wxuser = Wxuser::where('uid', $uid)->field('last_read_comment_time')->find();
         $count = $this->where(
-            [['create_time', '>', $wxuser['last_read_comment_time']], ['to_uid','=', $uid]]
+            [
+                ['create_time', '>', $wxuser['last_read_comment_time']],
+                ['to_uid', '=', $uid],
+                ['uid', '<>', $uid]
+            ]
         )->count();
         if ($count) {
             return (string)$count;
@@ -85,9 +89,9 @@ class Comment extends BaseModel
      * @author xsm
      * @since 2020-10-01
      */
-    public function getList(array $condition, int $page, int $pageSize):array
+    public function getList(array $condition, int $page, int $pageSize): array
     {
-        $where = [['pid', '=', 0], ['delete_time', '=', '0'],['is_online','=',1]];
+        $where = [['pid', '=', 0], ['delete_time', '=', '0'], ['is_online', '=', 1]];
         if (isset($condition['cid']) && !empty($condition['cid'])) {
             $where[] = ['cid', '=', intval($condition['cid'])];
         }
@@ -133,7 +137,7 @@ class Comment extends BaseModel
      */
     public function getChildList(array $condition, int $page, int $pageSize): array
     {
-        $where = [['delete_time', '=', '0'],['is_online','=',1]];
+        $where = [['delete_time', '=', '0'], ['is_online', '=', 1]];
         if (isset($condition['pid']) && !empty($condition['pid'])) {
             $where[] = ['pid', 'IN', $condition['pid']];
         } else {
@@ -164,7 +168,7 @@ class Comment extends BaseModel
     }
 
 
-    public function formatValue(array $data):array
+    public function formatValue(array $data): array
     {
         $config = get_addon_config('cloudstore');
         $qiniuDomain = $config['domain'];

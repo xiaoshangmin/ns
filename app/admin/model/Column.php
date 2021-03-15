@@ -171,19 +171,19 @@ class Column extends BaseModel
         return $level;
     }
 
-    protected function setPriceAttr($value, $data)
-    {
-        if ($data['pid'] > 0) {
-            return 0;
-        }
-        return $value;
-    }
+    // protected function setPriceAttr($value, $data)
+    // {
+    //     if ($data['pid'] > 0) {
+    //         return 0;
+    //     }
+    //     return $value;
+    // }
 
-    protected function setRefreshPriceAttr($value, $data)
-    {
-        if ($data['pid'] > 0) {
-            return 0;
-        }
-        return $value;
-    }
+    // protected function setRefreshPriceAttr($value, $data)
+    // {
+    //     if ($data['pid'] > 0) {
+    //         return 0;
+    //     }
+    //     return $value;
+    // }
 }
