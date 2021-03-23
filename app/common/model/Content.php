@@ -143,9 +143,9 @@ class Content extends BaseModel
                 if (isset($condition['keyword']) && !empty($condition['keyword'])) {
                     $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
                 }
-                $list = $this->getList($where,  ['update_time' => 'desc'], $page, $diff);
+                $lists = $this->getList($where,  ['update_time' => 'desc'], $page, $diff);
             }
-            $lists = array_merge($topList, $list);
+            $lists = array_merge($topList, $lists);
         }
         $lists = $this->formatMultiValue($lists, $uid);
         return $lists;
@@ -362,7 +362,12 @@ class Content extends BaseModel
         $users = array_column($users, null, 'uid');
         foreach ($lists as &$list) {
             if (isset($columnInfoList[$list['id']])) {
-                $list['tags'] = array_merge($list['tags'], array_column($columnInfoList[$list['id']], 'name'));
+                $tags = array_column($columnInfoList[$list['id']], 'name'); 
+                $shareTitle = isset($tags[1]) ?$tags[1]:$tags[0];
+                $content = mb_substr($list['content'],0,50);
+                $shareTitle = "【{$shareTitle}】{$content}";
+                $list['shareTitle'] = $shareTitle; 
+                $list['tags'] = array_merge($list['tags'], $tags);
             }
             $list['user'] = [];
             if (isset($users[$list['uid']])) {
