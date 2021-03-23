@@ -27,6 +27,8 @@ class Attachment extends Backend
      */
     protected $model = null;
 
+    protected $searchFields = 'original_name';
+
     public function _initialize()
     {
         parent::_initialize();
@@ -76,7 +78,7 @@ class Attachment extends Backend
 
             return json($result);
         }
-
+        
         return $this->view->fetch();
     }
 
@@ -88,7 +90,7 @@ class Attachment extends Backend
         if ($this->request->isAjax()) {
             return $this->index();
         }
-
+        
         return $this->view->fetch();
     }
 

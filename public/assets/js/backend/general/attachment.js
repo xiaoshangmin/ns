@@ -21,7 +21,7 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
                 search:false,
                 showToggle: false,
                 showColumns: false,
-                searchFormVisible: true,
+                searchFormVisible: false,
                 commonSearch: false,
                 escape: false,
                 showExport: false,
@@ -46,11 +46,12 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
                             extend: "data-source='user.user/index' data-field='nickname'"
                         },
                         {field: 'url', title: __('Preview'), formatter: Controller.api.formatter.thumb, operate: false},
-                        {field: 'url', title: __('Url'), formatter: Controller.api.formatter.url},
-                        {field: 'imagewidth', title: __('Imagewidth'), sortable: true},
-                        {field: 'imageheight', title: __('Imageheight'), sortable: true},
+                        // {field: 'url', title: __('Url'), formatter: Controller.api.formatter.url},
+                        {field: 'original_name', title: __('originalName'), operate: false},
+                        {field: 'imagewidth', title: __('Imagewidth'), operate: false},
+                        {field: 'imageheight', title: __('Imageheight'), operate: false},
                         {field: 'imagetype', title: __('Imagetype'), formatter: Table.api.formatter.search},
-                        {field: 'storage', title: __('Storage'), formatter: Table.api.formatter.search},
+                        // {field: 'storage', title: __('Storage'), formatter: Table.api.formatter.search},
                         {
                             field: 'filesize', title: __('Filesize'), operate: 'BETWEEN', sortable: true, formatter: function (value, row, index) {
                                 var size = parseFloat(value);
@@ -96,7 +97,12 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
             table.bootstrapTable({
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 sortName: 'id',
+                // search:false,
                 showToggle: false,
+                showColumns: false,
+                searchFormVisible: false,
+                commonSearch: false,
+                escape: false,
                 showExport: false,
                 columns: [
                     [
@@ -105,6 +111,7 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
                         {field: 'admin_id', title: __('Admin_id'), visible: false},
                         {field: 'user_id', title: __('User_id'), visible: false},
                         {field: 'url', title: __('Preview'), formatter: Controller.api.formatter.thumb, operate: false},
+                        {field: 'original_name', title: __('originalName'), operate: false},
                         {field: 'imagewidth', title: __('Imagewidth'), operate: false},
                         {field: 'imageheight', title: __('Imageheight'), operate: false},
                         {
@@ -113,14 +120,14 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
                                 return value.replace(/\*/g, '%');
                             }
                         },
-                        {
-                            field: 'createtime',
-                            title: __('Createtime'),
-                            formatter: Table.api.formatter.datetime,
-                            operate: 'RANGE',
-                            addclass: 'datetimerange',
-                            sortable: true
-                        },
+                        // {
+                        //     field: 'createtime',
+                        //     title: __('Createtime'),
+                        //     formatter: Table.api.formatter.datetime,
+                        //     operate: 'RANGE',
+                        //     addclass: 'datetimerange',
+                        //     sortable: true
+                        // },
                         {
                             field: 'operate', title: __('Operate'), events: {
                                 'click .btn-chooseone': function (e, value, row, index) {

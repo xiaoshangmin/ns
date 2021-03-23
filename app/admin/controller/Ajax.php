@@ -82,7 +82,7 @@ class Ajax extends Backend
         $type = strtolower($matches[2]);
         $typeDict = ['b' => 0, 'k' => 1, 'kb' => 1, 'm' => 2, 'mb' => 2, 'gb' => 3, 'g' => 3];
         $size = (int) $upload['maxsize'] * pow(1024, isset($typeDict[$type]) ? $typeDict[$type] : 0);
-
+        
         $fileInfo['name'] = $file->getOriginalName(); //上传文件名
         $fileInfo['type'] = $file->getOriginalMime(); //上传文件类型信息
         $fileInfo['tmp_name'] = $file->getPathname();
@@ -155,9 +155,10 @@ class Ajax extends Backend
             'uploadtime'  => time(),
             'storage'     => $upload['driver'],
             'sha1'        => $sha1,
+            'original_name' => $fileInfo['name'],
             'extparam'    => json_encode($extparam),
         ];
-
+        
         $attachment = new Attachment();
         $attachment->data(array_filter($params));
         $attachment->save();

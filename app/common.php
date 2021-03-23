@@ -1106,8 +1106,10 @@ if (!function_exists('upload_file')) {
         }
         $savename = \think\facade\Filesystem::disk($name)->putFile($path, $file, function ($file) {
             //重命名
-            return md5((string) microtime(true));
+            // return md5((string) microtime(true));
+            return str_replace('.'.$file->getOriginalExtension(),'',$file->getOriginalName());
         });
+        // $savename = \think\facade\Filesystem::disk($name)->putFile($path, $file);
         // if(empty($url)){
         //     $url = '/';
         // }
