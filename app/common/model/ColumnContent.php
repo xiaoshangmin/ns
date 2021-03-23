@@ -22,6 +22,7 @@ class ColumnContent extends BaseModel
     {
         $topList = $this->getTopList($condition, $page, $pageSize);
         $diff = $pageSize - count($topList);
+        $list = [];
         if ($diff > 0) {
             $where = [
                 ['pay_status', '=', 1],
