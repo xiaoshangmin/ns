@@ -4,6 +4,7 @@ namespace app\admin\model;
 
 use app\common\model\BaseModel;
 use think\model\concern\SoftDelete;
+use Geohash;
 
 class Content extends BaseModel
 {
@@ -39,6 +40,11 @@ class Content extends BaseModel
         'column_id',
         'addr_column_id',
     ];
+
+    public static function onBeforeInsert($model)
+    {
+        $model->geohash = (new Geohash())->encode($model->lat, $model->lng);
+    }
 
     /**
      * 获取栏目第一个值
