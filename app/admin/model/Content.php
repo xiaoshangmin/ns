@@ -41,11 +41,6 @@ class Content extends BaseModel
         'addr_column_id',
     ];
 
-    public static function onBeforeInsert($model)
-    {
-        $model->geohash = (new Geohash())->encode($model->lat, $model->lng);
-    }
-
     /**
      * 获取栏目第一个值
      *
@@ -188,6 +183,7 @@ class Content extends BaseModel
         $columnIds =  join(',', $columnIds);
         $columnIds = rtrim($columnIds, ',');
         $content->column_ids = $columnIds;
+        $content->geohash = (new Geohash())->encode($content->lat, $content->lng);
     }
 
     public static function onAfterWrite($content)
