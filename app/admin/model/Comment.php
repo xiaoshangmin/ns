@@ -33,9 +33,6 @@ class Comment extends BaseModel
     ];
     
 
-    
-
-
 
     public function getDeleteTimeTextAttr($value, $data)
     {

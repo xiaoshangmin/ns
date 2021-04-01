@@ -5,7 +5,7 @@ use fast\Tree;
 use think\facade\Db;
 use app\common\model\Category;
 
-if (! function_exists('build_select')) {
+if (!function_exists('build_select')) {
 
     /**
      * 生成下拉列表.
@@ -26,7 +26,7 @@ if (! function_exists('build_select')) {
     }
 }
 
-if (! function_exists('build_radios')) {
+if (!function_exists('build_radios')) {
 
     /**
      * 生成单选按钮组.
@@ -43,15 +43,17 @@ if (! function_exists('build_radios')) {
         $selected = is_null($selected) ? key($list) : $selected;
         $selected = is_array($selected) ? $selected : explode(',', $selected);
         foreach ($list as $k => $v) {
-            $html[] = sprintf(Form::label("{$name}-{$k}", "%s {$v}"),
-                Form::radio($name, $k, in_array($k, $selected), ['id' => "{$name}-{$k}"]));
+            $html[] = sprintf(
+                Form::label("{$name}-{$k}", "%s {$v}"),
+                Form::radio($name, $k, in_array($k, $selected), ['id' => "{$name}-{$k}"])
+            );
         }
 
-        return '<div class="radio">'.implode(' ', $html).'</div>';
+        return '<div class="radio">' . implode(' ', $html) . '</div>';
     }
 }
 
-if (! function_exists('build_checkboxs')) {
+if (!function_exists('build_checkboxs')) {
 
     /**
      * 生成复选按钮组.
@@ -68,15 +70,17 @@ if (! function_exists('build_checkboxs')) {
         $selected = is_null($selected) ? [] : $selected;
         $selected = is_array($selected) ? $selected : explode(',', $selected);
         foreach ($list as $k => $v) {
-            $html[] = sprintf(Form::label("{$name}-{$k}", "%s {$v}"),
-                Form::checkbox($name, $k, in_array($k, $selected), ['id' => "{$name}-{$k}"]));
+            $html[] = sprintf(
+                Form::label("{$name}-{$k}", "%s {$v}"),
+                Form::checkbox($name, $k, in_array($k, $selected), ['id' => "{$name}-{$k}"])
+            );
         }
 
-        return '<div class="checkbox">'.implode(' ', $html).'</div>';
+        return '<div class="checkbox">' . implode(' ', $html) . '</div>';
     }
 }
 
-if (! function_exists('build_category_select')) {
+if (!function_exists('build_category_select')) {
 
     /**
      * 生成分类下拉列表框.
@@ -104,7 +108,7 @@ if (! function_exists('build_category_select')) {
     }
 }
 
-if (! function_exists('build_toolbar')) {
+if (!function_exists('build_toolbar')) {
 
     /**
      * 生成表格操作按钮栏.
@@ -147,7 +151,7 @@ if (! function_exists('build_toolbar')) {
         $html = [];
         foreach ($btns as $k => $v) {
             //如果未定义或没有权限
-            if (! isset($btnAttr[$v]) || ($v !== 'refresh' && ! $auth->check("{$controller}/{$v}"))) {
+            if (!isset($btnAttr[$v]) || ($v !== 'refresh' && !$auth->check("{$controller}/{$v}"))) {
                 continue;
             }
             [$href, $class, $icon, $text, $title] = $btnAttr[$v];
@@ -167,7 +171,7 @@ if (! function_exists('build_toolbar')) {
                     $download .= "<li><a href=\"/template/{$template}.csv\" target=\"_blank\">CSV模版</a></li>";
                 }
                 $download .= empty($download) ? '' : "\n                            ";
-                if (! empty($download)) {
+                if (!empty($download)) {
                     $html[] = <<<EOT
                         <div class="btn-group">
                             <button type="button" href="{$href}" class="btn btn-info btn-import" title="{$title}" id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"><i class="{$icon}"></i> {$text}</button>
@@ -179,10 +183,10 @@ if (! function_exists('build_toolbar')) {
                         </div>
 EOT;
                 } else {
-                    $html[] = '<a href="'.$href.'" class="'.$class.'" title="'.$title.'" id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"><i class="'.$icon.'"></i> '.$text.'</a>';
+                    $html[] = '<a href="' . $href . '" class="' . $class . '" title="' . $title . '" id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"><i class="' . $icon . '"></i> ' . $text . '</a>';
                 }
             } else {
-                $html[] = '<a href="'.$href.'" class="'.$class.'" title="'.$title.'"><i class="'.$icon.'"></i> '.$text.'</a>';
+                $html[] = '<a href="' . $href . '" class="' . $class . '" title="' . $title . '"><i class="' . $icon . '"></i> ' . $text . '</a>';
             }
         }
 
@@ -190,7 +194,7 @@ EOT;
     }
 }
 
-if (! function_exists('build_heading')) {
+if (!function_exists('build_heading')) {
 
     /**
      * 生成页面Heading.
@@ -205,7 +209,7 @@ if (! function_exists('build_heading')) {
         if (is_null($path)) {
             $action = request()->action();
             $controller = str_replace('.', '/', request()->controller());
-            $path = strtolower($controller.($action && $action != 'index' ? '/'.$action : ''));
+            $path = strtolower($controller . ($action && $action != 'index' ? '/' . $action : ''));
         }
         // 根据当前的URI自动匹配父节点的标题和备注
         $data = Db::name('auth_rule')->where('name', $path)->field('title,remark')->find();
@@ -213,14 +217,30 @@ if (! function_exists('build_heading')) {
             $title = __($data['title']);
             $content = __($data['remark']);
         }
-        if (! $content) {
+        if (!$content) {
             return '';
         }
-        $result = '<div class="panel-lead"><em>'.$title.'</em>'.$content.'</div>';
+        $result = '<div class="panel-lead"><em>' . $title . '</em>' . $content . '</div>';
         if ($container) {
-            $result = '<div class="panel-heading">'.$result.'</div>';
+            $result = '<div class="panel-heading">' . $result . '</div>';
         }
 
         return $result;
+    }
+}
+
+if (!function_exists('randomStr')) {
+
+    function randomStr(string $prefix="ns",int $length=25): string
+    {
+        //字符组合
+        $str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $len = strlen($str) - 1;
+        $randstr = '';
+        for ($i = 0; $i < $length; $i++) {
+            $num = mt_rand(0, $len);
+            $randstr .= $str[$num];
+        }
+        return "{$prefix}{$randstr}";
     }
 }

@@ -3,7 +3,7 @@
 return [
     'name' => '南沙部落',
     'beian' => '1',
-    'cdnurl' => '',
+    'cdnurl' => '1',
     'version' => '1.0.1',
     'timezone' => 'Asia/Shanghai',
     'forbiddenip' => '',
@@ -19,7 +19,12 @@ return [
         'test' => 'Test',
     ],
     'configgroup' => [
-        'ns' => 'Ns',
+        'ns'    =>  'Ns',
+        'basic' => 'Basic',
+        'email' => 'Email',
+        'dictionary' => 'Dictionary',
+        'user' => 'User',
+        'example' => 'Example',
     ],
     'mail_type' => '1',
     'mail_smtp_host' => 'smtp.qq.com',
@@ -29,9 +34,4 @@ return [
     'mail_verify_type' => '2',
     'mail_from' => '10000@qq.com',
     'login_background' => '/assets/img/qrcode.png',
-    'share_title' => '南沙',
-    'review_comments' => '0',
-    'apple_pay' => '0',
-    'content_view_number' => '3',
-    'post_review' => '0',
 ];

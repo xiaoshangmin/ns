@@ -40,10 +40,10 @@ class ColumnContent extends BaseModel
         return ['0' => __('Pay_status 0'), '1' => __('Pay_status 1'), '2' => __('Pay_status 2')];
     }
 
-    public function getIsOnlineList()
-    {
-        return ['0' => __('Is_online 0'), '1' => __('Is_online 1')];
-    }
+    // public function getIsOnlineList()
+    // {
+    //     return ['0' => __('Is_online 0'), '1' => __('Is_online 1')];
+    // }
 
 
     public function getCreateTimeTextAttr($value, $data)
@@ -79,13 +79,6 @@ class ColumnContent extends BaseModel
     {
         $value = $value ? $value : (isset($data['top']) ? $data['top'] : '');
         $list = $this->getTopList();
-        return isset($list[$value]) ? $list[$value] : '';
-    }
-
-    public function getIsOnlineTextAttr($value, $data)
-    {
-        $value = $value ? $value : (isset($data['is_online']) ? $data['is_online'] : '');
-        $list = $this->getIsOnlineList();
         return isset($list[$value]) ? $list[$value] : '';
     }
 

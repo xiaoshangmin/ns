@@ -8,13 +8,13 @@ use think\model\concern\SoftDelete;
 class Wxuser extends BaseModel
 {
 
-    
+
     use SoftDelete;
     protected $pk = 'uid';
 
     // 表名
     protected $name = 'wxuser';
-    
+
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
 
@@ -31,9 +31,21 @@ class Wxuser extends BaseModel
         'update_time_text',
         'status_text'
     ];
-    
 
-    
+
+    /**
+     * 后台添加的用户生成随机openid
+     *
+     * @param [type] $wxuser
+     * @return void
+     * @author xsm
+     * @since 2021-03-30
+     */
+    public static function onBeforeInsert($wxuser)
+    {
+        $wxuser->setAttr("openid", randomStr());
+    }
+
     public function getSexList()
     {
         return ['1' => __('Sex 1'), '2' => __('Sex 2')];
@@ -89,10 +101,9 @@ class Wxuser extends BaseModel
         $value = $value ? $value : (isset($data['delete_time']) ? $data['delete_time'] : '');
         return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
     }
-    
+
     protected function setDeleteTimeAttr($value)
     {
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
-
 }

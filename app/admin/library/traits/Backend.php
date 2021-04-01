@@ -12,7 +12,6 @@
 
 namespace app\admin\library\traits;
 
-use app\admin\model\User;
 use think\Exception;
 use think\facade\Db;
 use app\admin\library\Auth;

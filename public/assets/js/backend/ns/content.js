@@ -32,21 +32,35 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'wxuser.nickname', title: __('Nickname')},
                         {field: 'mobile', title: __('Mobile')},
                         {field: 'contacts', title: __('Contacts')},
-                        {field: 'pictures', title: __('Pictures'),events: Table.api.events.image, formatter: Table.api.formatter.images,operate: false},
-                        {field: 'like_count', title: __('Like_count'),operate: false},
+                        // {field: 'pictures', title: __('Pictures'),events: Table.api.events.image, formatter: Table.api.formatter.images,operate: false},
+                        // {field: 'like_count', title: __('Like_count'),operate: false},
                         // {field: 'share_count', title: __('Share_count')},
                         // {field: 'comment_count', title: __('Comment_count')},
-                        {field: 'view_count', title: __('View_count'),operate: false},
-                        {field: 'address', title: __('Address'),operate: false},
+                        // {field: 'view_count', title: __('View_count'),operate: false},
+                        // {field: 'address', title: __('Address'),operate: false},
+                        {
+                            field: 'list_content', 
+                            title: __('Content'),
+                            cellStyle:function(){
+                                return {
+                                    css:{
+                                        "max-width": "300px",
+                                        "min-width": "200px",
+                                        "text-overflow": "ellipsis",
+                                        "white-space": "initial"
+                                    }
+                                }
+                            }
+                        },
                         // {field: 'lng', title: __('Lng'), operate:'BETWEEN'},
                         // {field: 'lat', title: __('Lat'), operate:'BETWEEN'},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         // {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'expiry_time', title: __('Expiry_time'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
-                        {field: 'top', title: __('Top'), searchList: {"0":__('Top 0'),"1":__('Top 1')}, formatter: Table.api.formatter.normal},
-                        {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2')}, formatter: Table.api.formatter.status},
-                        {field: 'is_online', title: __('Is_online'), searchList: {"0":__('Is_online 0'),"1":__('Is_online 1')}, formatter: Table.api.formatter.status},
+                        // {field: 'top', title: __('Top'), searchList: {"0":__('Top 0'),"1":__('Top 1')}, formatter: Table.api.formatter.normal},
+                        // {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2')}, formatter: Table.api.formatter.status},
+                        // {field: 'is_online', title: __('Is_online'), searchList: {"0":__('Is_online 0'),"1":__('Is_online 1')}, formatter: Table.api.formatter.status},
                         // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                         {
                             field: 'operate',

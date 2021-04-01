@@ -7,6 +7,7 @@ return [
     'Type'                        => '类型',
     'Title'                       => '变量标题',
     'Value'                       => '变量值',
+    'Ns'                          => '基础设置',
     'Basic'                       => '基础配置',
     'Email'                       => '邮件配置',
     'Attachment'                  => '附件配置',
@@ -62,4 +63,9 @@ return [
     'This is a test mail'         => '这是一封来自YFCMF-TP6的邮件',
     'Please input your email'     => '请输入测试接收者邮箱',
     'Please input correct email'  => '请输入正确的邮箱地址',
+    'Share Title' => '首页分享标题',
+    'Review Comments' => '评论审核',
+    'Apple Pay' => '苹果手机支付',
+    'Content View Number' => '内容浏览随机数',
+    'Post Review'          => '发帖审核',
 ];

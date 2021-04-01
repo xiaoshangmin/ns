@@ -138,7 +138,6 @@ class Content extends BaseModel
                     'pay_status' => 1,
                     'expiry_time' => ['expiry_time', '<', time()],
                     'status' => 1,
-                    'is_online' => 1,
                 ];
                 if (isset($condition['keyword']) && !empty($condition['keyword'])) {
                     $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
@@ -167,7 +166,6 @@ class Content extends BaseModel
         $where = [
             'pay_status' => 1,
             'status' => 1,
-            'is_online' => 1,
         ];
         if (isset($condition['geohash']) && !empty($condition['geohash'])) {
             $where['geohash'] = ['geohash', 'like', "{$condition['geohash']}%"];
@@ -248,7 +246,6 @@ class Content extends BaseModel
             'top' => 1,
             'expiry_time' => ['expiry_time', '>', time()],
             'status' => 1,
-            'is_online' => 1,
         ];
         if (isset($condition['keyword']) && !empty($condition['keyword'])) {
             $where['content'] = ['content', 'like', "%{$condition['keyword']}%"];
@@ -278,9 +275,6 @@ class Content extends BaseModel
         }
         if (isset($condition['top']) && is_numeric($condition['top'])) {
             $where[] = ['top', '=', intval($condition['top'])];
-        }
-        if (isset($condition['is_online']) && is_numeric($condition['is_online'])) {
-            $where[] = ['is_online', '=', intval($condition['is_online'])];
         }
         if (isset($condition['keyword'])) {
             $where[] = $condition['keyword'];

@@ -35,10 +35,10 @@ class Content extends BaseModel
         'status_text',
         'top_text',
         'pay_status_text',
-        'is_online_text',
         'pcolumn_id',
         'column_id',
         'addr_column_id',
+        'list_content',
     ];
 
     /**
@@ -117,6 +117,11 @@ class Content extends BaseModel
             return join(',', $pics);
         }
         return '';
+    }
+
+    public function getListContentAttr($value, $data)
+    {
+        return mb_substr($data['content'],0,90);
     }
 
     /**
@@ -202,7 +207,6 @@ class Content extends BaseModel
                 'expiry_time' => $content->expiry_time ?? 0,
                 'status' => $content->status ?? 0,
                 'pay_status' => $content->pay_status ?? 0,
-                'is_online' => $content->is_online ?? 0,
             ];
             (new ColumnContent)->save($insert);
         }
@@ -270,13 +274,6 @@ class Content extends BaseModel
     {
         $value = $value ? $value : (isset($data['pay_status']) ? $data['pay_status'] : '');
         $list = $this->getPayStatusList();
-        return isset($list[$value]) ? $list[$value] : '';
-    }
-
-    public function getIsOnlineTextAttr($value, $data)
-    {
-        $value = $value ? $value : (isset($data['is_online']) ? $data['is_online'] : '');
-        $list = $this->getIsOnlineList();
         return isset($list[$value]) ? $list[$value] : '';
     }
 

@@ -18,7 +18,7 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
 
             // 初始化表格
             table.bootstrapTable({
-                search:false,
+                // search:false,
                 showToggle: false,
                 showColumns: false,
                 searchFormVisible: false,

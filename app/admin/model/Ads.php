@@ -36,7 +36,7 @@ class Ads extends BaseModel
     
     public function getTypeList()
     {
-        return ['1' => __('Type 1'), '2' => __('Type 2')];
+        return ['1' => __('Type 1'), '2' => __('Type 2'),'3' => __('Type 3'), '4' => __('Type 4'),'5' => __('Type 5'), '6' => __('Type 6')];
     }
 
     public function getLinkTypeList()
